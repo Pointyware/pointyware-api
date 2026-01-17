@@ -1,0 +1,27 @@
+{
+  "name": "pointyware-api",
+  "version": "1.0.0",
+  "description": "Dynamic Endpoint for Pointyware",
+  "homepage": "https://github.com/Pointyware/pointyware-api#readme",
+  "bugs": {
+    "url": "https://github.com/Pointyware/pointyware-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pointyware/pointyware-api.git"
+  },
+  "license": "AGPL-3.0",
+  "author": "TSampley@gmail.com",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "npx ts-node src/index.ts",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "express": "^5.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
