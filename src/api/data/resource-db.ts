@@ -14,8 +14,7 @@ CREATE TABLE comments (
   feed_id INT REFERENCES feeds ON DELETE CASCADE,
   parent_id INT,
   content TEXT NOT NULL
-);
-`
+);`
 
 export class ResourceDb {
   private db: DatabaseSync
@@ -27,19 +26,17 @@ export class ResourceDb {
 
     return new Promise<Comment>((resolve,reject)=>{
       try {
-        const comment = this._addComment(feedId,parentId,content)
         const uuid = randomUUID() // generate a UUID for the comment
-        const statement = this.db.prepare('INSERT INTO comments (feed_id,parent_id,content,uuid) VALUES ($feedId,$parentId,$content,$uuid)')
-        const changed = statement.run({
+        const statement = this.db.prepare(`
+            INSERT INTO comments (feed_id,parent_id,content)
+            VALUES ($feedId,$parentId,$content)
+            `)
+        statement.run({
           feedId: feedId,
           parentId: parentId,
           content: content,
           uuid: uuid
-        })
-        const id = changed.lastInsertRowid
-        // TODO: include id in Comment entity
-
-        
+        }) 
         resolve(new Comment(content,uuid))
       }
       catch (err) {
