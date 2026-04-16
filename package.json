@@ -17,8 +17,8 @@
   "scripts": {
     "build": "tsc",
     "start": "npx ts-node src/index.ts",
-    "lint": "npx eslint .",
-    "test": "jest"
+    "lint": "eslint",
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
