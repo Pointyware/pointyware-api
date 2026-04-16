@@ -1,7 +1,7 @@
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite"
 
 import { Comment } from "../entities/comment.js"
-import { randomUUID } from "node:crypto"
+import { randomUUID, type UUID } from "node:crypto"
 
 const TABLE_FEEDS = `
 CREATE TABLE feeds (
@@ -54,7 +54,8 @@ export class ResourceDb {
 
     const commentList = result.map((value:Record<string,SQLOutputValue>)=>{
       const comment = value['comment']?.valueOf() as string || '<No Comment>'
-      return new Comment(comment)
+      const uuid = value['uuid']?.valueOf() as UUID || '<No UUID>'
+      return new Comment(comment, uuid)
     })
 
     return commentList
