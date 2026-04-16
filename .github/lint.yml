@@ -1,0 +1,20 @@
+name: 
+run-name: 
+
+on:
+  pull-request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v6 # https://github.com/actions/checkout
+      - name: Setup Node
+        uses: actions/setup-node@v6 # https://github.com/actions/setup-node
+        with:
+          node-version: 25.2.1
+      - name: Setup Project
+        run: npm install
+      - name: Lint
+        run: npm run lint

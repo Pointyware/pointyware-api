@@ -1,0 +1,35 @@
+name: Test API
+run-name: 
+
+on:
+  pull-request:
+    branches: [ main ]
+
+jobs:
+  test:
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v6 # https://github.com/actions/checkout
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25.2.1
+      - name: Setup Project
+        run: npm install
+      - name: Test Project
+        run: npm run test
+
+      # - name: Checkout Reports Upload Report
+      #   uses: actions/checkout@v6
+      #   with:
+      #     repository: Pointyware/reports
+      #     path: reports
+      # - name: Move report
+      #   run: |
+      #     cd ..
+      #     mkdir -p reports/pointyware-api/
+      #     datestamp="$(date -Iminutes)"
+      #     mv api/output/report "reports/pointyware-api/$datestamp-{{ github.commit_hash }}"
+      # - name: Commit Report
+      #   run: git commit -m " {{ github.commit_hash }} "
+      

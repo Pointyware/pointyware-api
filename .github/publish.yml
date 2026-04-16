@@ -1,0 +1,22 @@
+name: Publish API
+run-name: Publish ${{ github.ref }} by @${{ github.actor }}
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v6 # https://github.com/actions/checkout
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25.2.1
+      - name: Setup Project
+        run: npm install
+      - name: Build Project
+        run: npm run build
+      - name: Publish
+        run: 
