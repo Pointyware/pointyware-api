@@ -8,7 +8,6 @@ export function configureCommentsRouting(api: express.Application) {
     res.send('Hello Commenter!')
     console.log("Saying Hello to commenter")
   })
-
 }
 
 export function configureProfileRouting(api: express.Application) {

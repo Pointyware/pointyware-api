@@ -1,6 +1,6 @@
 
 import type { ResourceDb } from './data/resource-db.js'
-
+import type { Comment } from './entities/comment.js';
 
 
 /**
@@ -12,7 +12,7 @@ export class ApiController {
     this.resourceDb = resourceDb;
   }
 
-  getComments(feedId:string): Array<Comment> {
-    return this.resourceDb.getComments(feedId)
+  async getComments(feedId:string): Promise<Array<Comment>> {
+    return await this.resourceDb.getComments(feedId)
   }
 }
