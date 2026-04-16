@@ -1,6 +1,7 @@
 
 import express from 'express'
 import { configureCommentsRouting } from './api/routing.js'
+import { configureProfileRouting } from './api/routing.js'
 
 export default function startApi(port:number) {
   const api = express()
