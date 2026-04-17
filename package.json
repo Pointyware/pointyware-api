@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.9",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19.2.14",
     "eslint": "^9.39.2",
     "express": "^5.2.1",
@@ -32,6 +33,7 @@
     "vitest": "^4.1.4"
   },
   "dependencies": {
+    "pg": "^8.20.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   }
