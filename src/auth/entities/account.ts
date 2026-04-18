@@ -4,12 +4,12 @@
  */
 export class Account {
   username:string
-  password:string
-  email?:string
-  phoneNumber?:string
+  email:string|undefined
+  phoneNumber:string|undefined
 
-  constructor(username:string,password:string) {
+  constructor(username:string,email:string|undefined=undefined,phoneNumber:string|undefined=undefined) {
     this.username = username
-    this.password = password
+    this.email = email
+    this.phoneNumber = phoneNumber
   }
 }

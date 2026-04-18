@@ -5,7 +5,9 @@ import type { UUID } from "node:crypto"
  */
 export class Comment {
   text:string
+  userId:UUID
   constructor(text:string,uuid:UUID) {
     this.text = text
+    this.userId = uuid
   }
 }
