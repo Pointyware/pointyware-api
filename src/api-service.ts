@@ -1,9 +1,9 @@
 
 import express from 'express'
-import { configureCommentsRouting } from './api/routing.js'
-import { configureProfileRouting } from './api/routing.js'
+import { configureCommentsRouting } from './api/resource-routing.js'
+import { configureProfileRouting } from './api/resource-routing.js'
 
-export default function startApi(port:number) {
+export default async function startApi(port:number) {
   const api = express()
 
   // Setup API Routing
