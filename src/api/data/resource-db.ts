@@ -65,7 +65,7 @@ export class ResourceDb {
 }
 
 
-function resourcePool(): Pool {
+export function resourcePool(): Pool {
   return PgFacade.getPool(
     'pointyware-api',
     'apiUser','apiPass','localhost',5001,'social'
