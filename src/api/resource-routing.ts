@@ -4,8 +4,13 @@ import express from 'express'
 import { ApiController } from './resource-controller.js'
 import { ResourceDb, resourcePool } from './data/resource-db.js'
 
-interface CommentsParams {
+interface UserParams {
   userId:string
+}
+
+interface UserInfo {
+  email?:string
+  phoneNumber?:string
 }
 
 export function configureCommentsRouting(api: express.Application) {
@@ -15,7 +20,7 @@ export function configureCommentsRouting(api: express.Application) {
   const controller = new ApiController(db)
 
   api.get('/comments/:userId', async (
-    req: express.Request<CommentsParams, any, any, any>, 
+    req: express.Request<UserParams, any, any, any>, 
     res
   )=>{
     // 1. marshall data from request
@@ -39,16 +44,28 @@ export function configureCommentsRouting(api: express.Application) {
 }
 
 export function configureProfileRouting(api: express.Application) {
-  api.post('/profile', async (req, res)=>{
-    
+  api.post('/profile', async (
+    req: express.Request<any, any, NewUser, any>, 
+    res
+  )=>{
+    console.info('Creating new user: ', )
   })
-  api.get('/profile', async (req, res)=>{
+  api.get('/profile:userId', async (
+    req: express.Request<UserParams, any, any, any>, 
+    res
+  )=>{
       
   })
-  api.put('/profile/:userId', async (req, res)=>{
+  api.put('/profile/:userId', async (
+    req: express.Request<UserParams, any, UserInfo, any>,
+    res
+  )=>{
       
   })
-  api.delete('/profile/:userId', async (req, res)=>{
+  api.delete('/profile/:userId', async (
+    req: express.Request<UserParams, any, any, any>, 
+    res
+  )=>{
       
   })
 }
