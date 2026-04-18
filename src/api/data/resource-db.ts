@@ -2,6 +2,8 @@ import { DatabaseSync, type SQLOutputValue } from "node:sqlite"
 
 import { Comment } from "../entities/comment.js"
 import { randomUUID, type UUID } from "node:crypto"
+import { PgFacade } from "../../data/pg-facade.js"
+import type { Pool } from "pg"
 
 const TABLE_FEEDS = `
 CREATE TABLE feeds (
@@ -60,4 +62,12 @@ export class ResourceDb {
 
     return commentList
   }
+}
+
+
+function resourcePool(): Pool {
+  return PgFacade.getPool(
+    'pointyware-api',
+    'apiUser','apiPass','localhost',5001,'social'
+  )
 }
