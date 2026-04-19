@@ -1,7 +1,7 @@
 
 import express from 'express'
 import { AuthController } from './auth-controller.js'
-import { AuthDatabase, authSqlPool } from './data/auth-db.js'
+import type { UserIdDto } from '../data/dtos.js'
 
 /**
  * Information for creating a new user.
@@ -18,7 +18,7 @@ interface NewUser {
  */
 interface UserInfo {
   username:string
-  profileImage:
+  profileImage:ProfileImage
 }
 
 interface ProfileImage {
@@ -34,22 +34,22 @@ interface UrlImage extends ProfileImage {
 
 /**
  * 
- * @param auth The authorization Express app to configure.
+ * @param app The authorization Express app to configure.
  */
-export async function configureAuthRouting(
-  auth:express.Application,
+export function accountRouting(
+  app:express.Application,
   controller: AuthController,
 ) {
 
   // Create New Account
-  auth.post('/create', async (
+  app.post('/account/', async (
     req: express.Request<any, any, NewUser>,
     res
   ) => {
-    const query = req.query
+    const body = req.body
 
     try {
-      const account = await controller.createAccount(query.username, query.password, query.email, query.phoneNumber)
+      const account = await controller.createAccount(body.username, body.password, body.email, body.phoneNumber)
 
       res.send(account)
     } catch (error) {
@@ -57,7 +57,7 @@ export async function configureAuthRouting(
     }
   })
 
-  auth.post('/login', async (req, res) => {
+  app.post('/login', async (req, res) => {
     // 1. decode request into appropriate model
     const username = ""
     const password = ""
@@ -69,13 +69,42 @@ export async function configureAuthRouting(
     res.send(token)
   })
 
-  auth.post('/logout', (req, res) => {
+  app.post('/logout', (req, res) => {
     // 1. decode request into model
   })
 
   // TODO: add OAuth endpoints/flow
 
-  auth.post('/auth/oauth', async (req, res) => {
+  app.post('/auth/oauth', async (req, res) => {
 
+  })
+
+  app.post('/account', async (
+    req: express.Request<any, any, NewUser, any>, 
+    res
+  )=>{
+    console.info('Creating new user: ', req.body)
+    res.send('Ok')
+  })
+  app.get('/account:userId', async (
+    req: express.Request<UserIdDto, any, any, any>, 
+    res
+  )=>{
+    console.info('Getting user: ', req.params)
+    res.send('Ok')
+  })
+  app.put('/account/:userId', async (
+    req: express.Request<UserIdDto, any, UserInfo, any>,
+    res
+  )=>{
+    console.info('Updating user: ', req.params)
+    res.send('Ok')
+  })
+  app.delete('/account/:userId', async (
+    req: express.Request<UserIdDto, any, any, any>, 
+    res
+  )=>{
+    console.info('Deleting user: ', req.params)
+    res.send('Ok')
   })
 }

@@ -1,6 +1,8 @@
 
-import startAuth from './account-service.js'
-import startApi from './api-service.js'
+import startAccountService from './account-service.js'
+import startSocialService from './social-service.js'
 
-startAuth(3001)
-startApi(3002)
+// Accounts Service (authorization) must be running for anything to work
+startAccountService(3001)
+// Start resource services
+startSocialService(3002)
