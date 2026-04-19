@@ -1,4 +1,4 @@
-import { ClientBase, Pool, type PoolClient } from "pg";
+import { ClientBase, Pool } from "pg";
 
 
 /**
