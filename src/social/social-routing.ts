@@ -1,10 +1,10 @@
 
 
-import type { Application, Request } from 'express'
+import type { Application, Request, Response } from 'express'
 import { SocialController } from './social-controller.js'
 import { SocialDatabase, resourcePool } from './data/social-db.js'
 import type { UserIdDto, CommentDto, CommentIdDto } from '../data/dtos.js'
-import { handle } from '../adapters/util.js'
+import { handle } from '../common/adapter.js'
 import type { UUID } from 'crypto'
 import type { Comment } from './entities/comment.js'
 
@@ -34,8 +34,8 @@ function GetCommentMapper(req:Request<CommentIdDto,any,any,any>): CommentQuery {
     id: req.params.commentId
   }
 }
-function GetComments(query:CommentQuery,controller: SocialController): Comment[] {
-  return await controller.getComments(query.id)
+async function GetComments(query:CommentQuery,controller: SocialController): Promise<Comment[]> {
+return await controller.getComments(query.id)
 }
 function CommentListResponseMapper(comments: Comment[], res: Response) {
   
@@ -52,15 +52,25 @@ export function socialRouting(app: Application) {
   const db = new SocialDatabase()
   const controller = new SocialController(db)
 
+  const curriedFunction = async (query:CommentQuery) => {
+    return GetComments(query,controller)
+  }
   app.get('/comments/comment-:commentId', 
-    handle(GetCommentMapper, GetComments, CommentListResponseMapper)
+    handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
   )
-    async(
-    req: Request<CommentIdDto, any, any, any>,
-    res
-  )=>{
-
-  })
+  app.route('/comments/comment-:commentId')
+    .post(
+      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+    )
+    .get(
+      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+    )
+    .put(
+      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+    )
+    .delete(
+      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+    )
 
   app.post('/comments/comment-:commentId', async(
     req: Request<CommentIdDto, any, CommentDto, any>,

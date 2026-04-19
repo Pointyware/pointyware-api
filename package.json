@@ -16,7 +16,8 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npx ts-node src/index.ts",
+    "clean": "rm -r dist",
+    "start": "tsx src/index.ts",
     "lint": "eslint",
     "test": "vitest"
   },
@@ -28,6 +29,7 @@
     "eslint": "^9.39.2",
     "express": "^5.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0",
     "vitest": "^4.1.4"
