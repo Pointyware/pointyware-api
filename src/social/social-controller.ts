@@ -1,6 +1,6 @@
 
 import type { UUID } from 'node:crypto';
-import type { ResourceDb } from './data/resource-db.js'
+import type { SocialDatabase } from './data/social-db.js'
 import type { Comment } from './entities/comment.js';
 
 const NULL_UUID = `0-0-0-0-0`
@@ -8,8 +8,8 @@ const NULL_UUID = `0-0-0-0-0`
  * 
  */
 export class SocialController {
-  private resourceDb: ResourceDb;
-  constructor(resourceDb:ResourceDb) {
+  private resourceDb: SocialDatabase;
+  constructor(resourceDb:SocialDatabase) {
     this.resourceDb = resourceDb;
   }
 

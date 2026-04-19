@@ -18,7 +18,7 @@ CREATE TABLE comments (
   content TEXT NOT NULL
 );`
 
-export class ResourceDb {
+export class SocialDatabase {
   private db: DatabaseSync
   constructor(path:string=':memory:') {
     this.db = new DatabaseSync(path)

@@ -1,6 +1,6 @@
 
 import express from 'express'
-import { AuthController } from './auth-controller.js'
+import { AccountController } from './account-controller.js'
 import type { UserIdDto } from '../data/dtos.js'
 
 /**
@@ -33,12 +33,12 @@ interface UrlImage extends ProfileImage {
 
 
 /**
- * 
+ * TODO: rename to Router and refactor to use express.Router() objects
  * @param app The authorization Express app to configure.
  */
 export function accountRouting(
   app:express.Application,
-  controller: AuthController,
+  controller: AccountController,
 ) {
 
   // Create New Account

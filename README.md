@@ -40,12 +40,44 @@ The network interface acts as our ultimate input and output with the outside wor
 
 classDiagram
 
-  class Router {
-    configureRoute(app)
+  namespace Frameworks {
+    class Router {
+      configureRoute(app)
+    }
+    class Express
+
+    class DatabaseImpl {
+
+    }
+    class SqlDriver
+    class PostgresDriver
+    class SqliteDriver
+  }
+  Router --> Express
+  DatabaseImpl --> SqlDriver
+  PostgresDriver <|-- SqlDriver
+  SqliteDriver <|-- SqlDriver
+
+  namespace Adapters {
+    class Controller {
+      doThing()
+      doAnotherThing()
+    }
+
+  }
+  namespace UseCases {
+    class Database {
+
+    }
+  }
+  DatabaseImpl <|-- Database
+  namespace Entities {
+    class UserInfo {
+      username:string
+      image:ProfileImage
+    }
   }
   class Controller {
-    doThing()
-    doAnotherThing()
   }
   class Database {
     create()
@@ -57,3 +89,67 @@ classDiagram
   Controller --> Database
 
 ```
+
+### Theory
+
+Comment:
+- text:string
+- children:Comment[]
+
+Feed:
+- title:string
+- enabled:boolean
+- comments:Comment[]
+
+
+RESTful APIs are meant to represent resources and their manipulation
+A fundamental decision in the manipulation of different properties is their data type, or structure, 
+Since POST, GET, PUT/PATCH, DELETE roughly correspond to Create, Read, Update, Delete, I think it makes sense to design an API by thinking about each endpoint like a resource and trying to assign a type that gives better semantic reasoning to each of the HTTP methods.
+/set-resource: Set[Type]
+- POST adds a new element of Type to the set
+- GET gets the elements in the set (allows filtering)
+- PUT override an existing element in the set
+- DELETE remove an element from the set
+/list-resource: List[Type]
+- POST adds a new element of Type to the list
+- GET gets the elements in the list (allows filtering)
+- PUT override an existing element at a position in the list
+- DELETE remove an element at a position OR remove all instances of an element
+/map-resource: Map[Key, Value]
+- POST adds a new element as a value and returns the key
+- GET gets the elements in the map (allows filtering)
+- -key
+  - PUT update specific value at key
+  - DELETE delete specific value at key
+
+Creates endpoints:
+- /feeds: Set[Feed]
+  - POST create new comment feed
+  - GET get list of feeds (scoped to user access)
+  - /feed-:feedId
+    - PUT modify comment feed
+    - DELETE remove comment feed
+    - /comments
+      - POST create a new comment
+      - GET 
+- /comments
+  // Feeds
+  - POST /feed create new comment feed
+  - GET /feed-UUID get comment feed details
+  - PUT /feed-UUID update comment feed details
+  - DELETE /feed-UUID delete comment feed
+  // Comments
+  - /feed-UUID - ``
+    - POST: create new comment on feed
+    - GET: get comments on feed
+  - /comment-UUID
+    - POST: create new comment on comment
+    - GET: get specific comment
+    - PUT: update comment
+    - DELETE: delete comment
+  // Users
+  - /user-UUID - `View()`
+    - GET: get comments by user
+    - POST,PUT,DELETE are all nonsense
+  - DELETE /comment-UUID delete specific comment
+  - 

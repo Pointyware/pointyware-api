@@ -1,5 +1,5 @@
 
-import { socialRouting } from './api/social-routing.js'
+import { socialRouting } from './social/social-routing.js'
 import { Service } from './service.js'
 
 /**

@@ -5,7 +5,7 @@ import { PgFacade } from "../../data/pg-facade.js"
 /**
  * 
  */
-export class AuthDatabase {
+export class AccountDatabase {
 
   /**
    * The Postgres database connection.

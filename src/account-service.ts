@@ -1,6 +1,6 @@
-import { accountRouting } from './auth/auth-routing.js'
-import { AuthDatabase, authSqlPool } from './auth/data/auth-db.js'
-import { AuthController } from './auth/auth-controller.js'
+import { accountRouting } from './accounts/account-routing.js'
+import { AccountDatabase, authSqlPool } from './accounts/data/account-database.js'
+import { AccountController } from './accounts/account-controller.js'
 import { Service } from './service.js'
 
 /**
@@ -21,8 +21,8 @@ export class AccountService extends Service {
 
   override async start(port:number) {
     const pool = await authSqlPool()
-    const database = new AuthDatabase(pool)
-    const controller = new AuthController(database)
+    const database = new AccountDatabase(pool)
+    const controller = new AccountController(database)
 
     // Setup Auth Routing
     accountRouting(this.app,controller)

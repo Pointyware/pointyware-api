@@ -1,18 +1,18 @@
-import type { AuthDatabase } from "./data/auth-db.js"
+import type { AccountDatabase } from "./data/account-database.js"
 import { Account } from "./entities/account.js"
 
 /**
  * 
  */
-export class AuthController {
+export class AccountController {
 
-  database:AuthDatabase
-  constructor(database:AuthDatabase) {
+  database:AccountDatabase
+  constructor(database:AccountDatabase) {
     this.database = database
   }
 
   async createAccount(username:string, password:string, email?:string, phoneNumber?:string): Promise<Account> {
-    const account = new Account(username, password, email, phoneNumber)
+    const account = new Account(username, email, phoneNumber)
 
     try {
       this.database.createUser(username, password)
