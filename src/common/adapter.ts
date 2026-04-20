@@ -5,14 +5,14 @@ import { failure, success, type Result } from "./result.js";
 /**
  * 
  */
-export function adapter<A, B, C, D, E, F>(
-  requestModelMapper: (request:Request<A, B, C, D>)=>E, 
-  modelFunction: (model:E)=>Promise<F>,
-  modelResponseMapper: (result:Result<F>,response:Response)=>void
-): (req:Request<A, B, C, D>,res:Response)=>Promise<void> {
+export function adapter<Params, ResBody, ReqBody, ReqQuery, CQ, Model>(
+  requestModelMapper: (request:Request<Params, ResBody, ReqBody, ReqQuery>)=>CQ, 
+  modelFunction: (commandQuery:CQ)=>Promise<Model>,
+  modelResponseMapper: (result:Result<Model>,response:Response<ResBody>)=>void
+) {
   return async (
-    req: Request<A, B, C, D>, 
-    res: Response
+    req: Request<Params, ResBody, ReqBody, ReqQuery>, 
+    res: Response<ResBody>
   ) => {
     const model = requestModelMapper(req)
     try {
