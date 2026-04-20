@@ -1,20 +1,25 @@
 
 import type { Request, Response } from "express";
+import { failure, success, type Result } from "./result.js";
 
 /**
  * 
  */
-export function handle<A, B, C, D, E, F>(
+export function adapter<A, B, C, D, E, F>(
   requestModelMapper: (request:Request<A, B, C, D>)=>E, 
   modelFunction: (model:E)=>Promise<F>,
-  modelResponseMapper: (model:F,response:Response)=>void
+  modelResponseMapper: (result:Result<F>,response:Response)=>void
 ): (req:Request<A, B, C, D>,res:Response)=>Promise<void> {
   return async (
     req: Request<A, B, C, D>, 
     res: Response
   ) => {
     const model = requestModelMapper(req)
-    const result = await modelFunction(model)
-    modelResponseMapper(result, res)
+    try {
+      const result = await modelFunction(model)
+      modelResponseMapper(success(result), res)
+    } catch (error) {
+      modelResponseMapper(failure(error), res)
+    }
   }
 }

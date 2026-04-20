@@ -4,9 +4,10 @@ import type { Application, Request, Response } from 'express'
 import { SocialController } from './social-controller.js'
 import { SocialDatabase, resourcePool } from './data/social-db.js'
 import type { UserIdDto, CommentDto, CommentIdDto } from '../data/dtos.js'
-import { handle } from '../common/adapter.js'
+import { adapter as adapter } from '../common/adapter.js'
 import type { UUID } from 'crypto'
 import type { Comment } from './entities/comment.js'
+import type { Result } from '../common/result.js'
 
 /**
  * What is the single responsibility of a router?
@@ -37,18 +38,38 @@ function GetCommentMapper(req:Request<CommentIdDto,any,any,any>): CommentQuery {
 async function GetComments(query:CommentQuery,controller: SocialController): Promise<Comment[]> {
 return await controller.getComments(query.id)
 }
-function CommentListResponseMapper(comments: Comment[], res: Response) {
-  
+function CommentListResponseMapper(result:Result<Comment[]>, res: Response) {
+  if (result.success) {
+    res.send(result.data)
+  } else {
+    if (result.error instanceof UnauthorizedError) {
+      res.status(401).send({ message:"User is Unauthorized", error:result.error})
+    } else if (result.error instanceof ForbiddenError) {
+      res.status(403).send({ message:"User is Not Allowed to Access this Resource", error:result.error})
+    } else {
+      res.status(500).send({ error: result.error})
+    }
+  }
 }
 
+export class UnauthorizedError {
+  resource:string
+  constructor(resource:string) {
+    this.resource = resource
+  }
+}
+export class ForbiddenError {
+  constructor() {}
+}
+export class UnknownError {
+  constructor() {}
+}
 
 /**
  * 
  * @param app 
  */
 export function socialRouting(app: Application) {
-  const pool = resourcePool();
-  // TODO: swap with pool interface
   const db = new SocialDatabase()
   const controller = new SocialController(db)
 
@@ -56,20 +77,20 @@ export function socialRouting(app: Application) {
     return GetComments(query,controller)
   }
   app.get('/comments/comment-:commentId', 
-    handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+    adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
   )
   app.route('/comments/comment-:commentId')
     .post(
-      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
     )
     .get(
-      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
     )
     .put(
-      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
     )
     .delete(
-      handle(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
     )
 
   app.post('/comments/comment-:commentId', async(
