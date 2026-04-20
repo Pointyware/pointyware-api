@@ -1,7 +1,7 @@
-import { accountRouting } from './accounts/account-routing.js'
-import { AccountDatabase, authSqlPool } from './accounts/data/account-database.js'
-import { AccountController } from './accounts/account-controller.js'
-import { Service } from './service.js'
+import { accountRouting } from '../accounts/account-routing.js'
+import { AccountDatabase, authSqlPool } from '../accounts/data/account-database.js'
+import { AccountController } from '../accounts/account-controller.js'
+import { Service } from '../common/service.js'
 
 /**
  * The Account Service manages all user account information, which includes

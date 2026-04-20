@@ -1,6 +1,6 @@
 
-import { socialRouting } from './social/social-routing.js'
-import { Service } from './service.js'
+import { socialRouting } from '../social/social-routing.js'
+import { Service } from '../common/service.js'
 
 /**
  * The Social Service 
