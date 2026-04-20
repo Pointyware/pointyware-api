@@ -1,4 +1,5 @@
-import { ClientBase, Pool } from "pg";
+import pg from "pg";
+
 
 
 /**
@@ -11,8 +12,8 @@ export class PgFacade {
     username:string,password:string,
     hostName:string,port:number,
     databasePath:string
-  ): Pool {
-    return new Pool({
+  ): pg.Pool {
+    return new pg.Pool({
       user: username,
       password: password,
       host: hostName,
@@ -21,7 +22,7 @@ export class PgFacade {
       // max: number,
       // min: number,
       // Client?: (new() => ClientBase) | undefined,
-      onConnect: function(client: ClientBase) {
+      onConnect: function(client: pg.ClientBase) {
         console.info(`client connected: `, client)
       },
       application_name: app,

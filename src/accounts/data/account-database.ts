@@ -1,5 +1,5 @@
 
-import { ClientBase, Pool } from "pg"
+import pg from "pg"
 import { PgFacade } from "../../data/pg-facade.js"
 
 /**
@@ -10,8 +10,8 @@ export class AccountDatabase {
   /**
    * The Postgres database connection.
    */
-  private pool:Pool
-  constructor(pool:Pool) {
+  private pool:pg.Pool
+  constructor(pool:pg.Pool) {
     this.pool = pool
   }
   
@@ -32,7 +32,7 @@ export class AccountDatabase {
   }
 }
 
-export async function authSqlPool(): Promise<Pool> {
+export async function authSqlPool(): Promise<pg.Pool> {
   const pool = PgFacade.getPool(
     'pointyware-api',
     'authUser','authPass','localhost',5001,'auth'
