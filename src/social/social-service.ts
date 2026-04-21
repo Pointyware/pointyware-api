@@ -7,8 +7,12 @@ import { Service } from '../common/service.js'
  */
 export class SocialService extends Service {
 
+  db:SocialDatabase
+  controller:SocialController
   constructor() {
     super()
+    this.db = new SocialDatabase()
+    this.controller = new SocialController(this.db)
   }
 
   override async start(port:number) {
