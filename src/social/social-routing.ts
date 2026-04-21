@@ -1,13 +1,10 @@
 
 
-import type { Application, Request, Response } from 'express'
+import { Router, type Application, type Request, type Response } from 'express'
 import { SocialController } from './social-controller.js'
-import { SocialDatabase, resourcePool } from './data/social-db.js'
-import type { UserIdDto, CommentDto, CommentIdDto } from '../data/dtos.js'
-import { adapter as adapter } from '../common/adapter.js'
-import type { UUID } from 'crypto'
-import type { Comment } from './entities/comment.js'
-import type { Result } from '../common/result.js'
+import { adapter, GenericResponseMapper } from '../common/adapter.js'
+import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetUserCommentsMapper, UpdateCommentMapper } from './adapters/comments.js'
+import { CreateComment, DeleteComment, GetComments, GetUserComments, UpdateComment } from './domain/comments.js'
 
 /**
  * What is the single responsibility of a router?
@@ -19,119 +16,102 @@ import type { Result } from '../common/result.js'
  * Isn't that 
  * @param app 
  */
-export function commentsRouting(app: Application) {
-  app.get('/feeds', async (
-    req: Request<any>,
-    res
-  )=> {
-  })
-}
+export function socialRouting(app: Application, controller: SocialController) {
+  app.route('/feeds/feed-:feedId/comments')
+    .post(// marshall data       , pass to business layer   , marshall data back to response
+      adapter(CreateCommentMapper, CreateComment(controller), GenericResponseMapper)
+    )
+  const route = app.route('/feeds/feed-:feedId')
 
-interface CommentQuery {
-  id:UUID
-}
-function GetCommentMapper(req:Request<CommentIdDto,any,any,any>): CommentQuery {
-  return {
-    id: req.params.commentId
-  }
-}
-async function GetComments(query:CommentQuery,controller: SocialController): Promise<Comment[]> {
-return await controller.getComments(query.id)
-}
-function CommentListResponseMapper(result:Result<Comment[]>, res: Response) {
-  if (result.success) {
-    res.send(result.data)
-  } else {
-    if (result.error instanceof UnauthorizedError) {
-      res.status(401).send({ message:"User is Unauthorized", error:result.error})
-    } else if (result.error instanceof ForbiddenError) {
-      res.status(403).send({ message:"User is Not Allowed to Access this Resource", error:result.error})
-    } else {
-      res.status(500).send({ error: result.error})
-    }
-  }
-}
-
-export class UnauthorizedError {
-  resource:string
-  constructor(resource:string) {
-    this.resource = resource
-  }
-}
-export class ForbiddenError {
-  constructor() {}
-}
-export class UnknownError {
-  constructor() {}
-}
-
-/**
- * 
- * @param app 
- */
-export function socialRouting(app: Application) {
-  const db = new SocialDatabase()
-  const controller = new SocialController(db)
-
-  const curriedFunction = async (query:CommentQuery) => {
-    return GetComments(query,controller)
-  }
-  app.get('/comments/comment-:commentId', 
-    adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
+  app.route('/feeds/feed-:feedId/comments/comment-:commentId')
+  app.get('/comments/user-:userId',
+    adapter(
+      GetUserCommentsMapper,
+      GetUserComments(controller)
+    )
   )
-  app.route('/comments/comment-:commentId')
-    .post(
-      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
-    )
-    .get(
-      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
-    )
-    .put(
-      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
-    )
-    .delete(
-      adapter(GetCommentMapper, curriedFunction, CommentListResponseMapper)
-    )
+  // TODO: split into separate functions for comments and reactions routing
+  const router = Router()
+  const feedsRoute = router.route('/feeds')
+  const feedIdRoute = router.route('/feeds/feed-:feedId')
+  const comments = router.route('/feeds/feed-:feedId/comments')
+  const commentIdRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId')
+  const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
 
-  app.post('/comments/comment-:commentId', async(
-    req: Request<CommentIdDto, any, CommentDto, any>,
-    res
+  feedsRoute
+    .post()
+    .get()
+  
+  feedIdRoute
+    .post(adapter(
+      FeedIdCreateCommentMapper,
+      CreateComment(controller)
+    ))
+    .get(adapter(
+      GetFeedQueryMapper,
+      GetFeed(controller)
+    ))
+    .put(adapter(
+      UpdateFeedCommandMapper,
+      UpdateFeed(controller)
+    ))
+    .delete(adapter(
+      RemoveFeedCommandMapper,
+      RemoveComment(controller)
+    ))
+
+  comments
+    .post()
+    .get()
+
+  commentIdRoute
+    .post(adapter(
+      CreateCommentMapper,
+      CreateComment(controller)
+    )).get(adapter(
+      GetCommentMapper, 
+      GetComments(controller)
+    )).put(adapter(
+      UpdateCommentMapper,
+      UpdateComment(controller)
+    )).delete(adapter(
+      DeleteCommentMapper, 
+      DeleteComment(controller)
+    ))
+  
+  reactionsRoute
+    .put((
+      req: Request,
+      res: Response
+    ) => {
+      
+    })
+
+  app.use(router)
+}
+
+export function commentsRoouting(app: Application, controller: SocialController) {
+
+}
+
+export function reactionsRouting(app: Application, controller: SocialController) {
+  const router = Router()
+  return Router()
+  .route('')
+  .get(async (
+    req: Request,
+    res: Response
   )=>{
-    // 1. marshall data from request
-    const params = req.body
 
-    // 2. pass request data to business layer
-    try {
-      const comment = await controller.createComment(params.content)
-
-      // 3a. marshall data back to user in response
-      res.status(201).send(comment)
-    } catch (error) {
-      // 3b. report error back to user in response
-      res.status(500).send()
-    }
-  })
-
-  app.get('/comments/user-:userId', async (
-    req: Request<UserIdDto, any, any, any>, 
-    res
+  }).post(async (
+    req: Request,
+    res: Response
   )=>{
-    // 1. marshall data from request
-    const params = req.params
-    console.info('Greeting User: ', params)
 
-    // 2. pass request data to business layer
-    try {
-      const comments = await controller.getComments(params.userId)
+  }).put(async (
+    req: Request,
+    res: Response
+  )=>{
 
-      // 3. marshall data back to user in response
-      const response = comments.flatMap((value, index)=> {
-        value.text
-      })
-      res.send(response)
-    } catch (error) {
-      // 3. notify user of error
-      res.status(500).send('Generic Error')
-    }
   })
 }
