@@ -28,3 +28,8 @@ export interface CommentIdDto {
 export interface CommentDto {
   content:string
 }
+
+export interface AccountAuthDto {
+  username:string
+  password:string
+}
