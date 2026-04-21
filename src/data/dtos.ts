@@ -19,6 +19,7 @@ export interface ProfileDto {
  * Identifies a comment by its id
  */
 export interface CommentIdDto {
+  feedId:UUID
   commentId:UUID
 }
 /**
