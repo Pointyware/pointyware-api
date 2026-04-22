@@ -61,7 +61,7 @@ export function GetAccount(database:AccountDatabase): (command:GetAccountCommand
 
 export function UpdateAccount(database:AccountDatabase): (command:EditUser) => Promise<Account> {
   return async function(command:EditUser): Promise<Account> {
-    return database.updateAccount(command.userId, command.name)
+    return database.updateAccount(command.userId, command.username)
   }
 }
 
