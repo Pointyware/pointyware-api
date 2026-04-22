@@ -3,6 +3,7 @@ import { socialRouting } from '../social/social-routing.js'
 import { Service } from '../common/service.js'
 import { SocialDatabase } from './data/social-db.js'
 import type { Request, Response } from 'express'
+import { ErrorHandler } from '../common/network.js'
 
 /**
  * The Social Service 
@@ -19,22 +20,22 @@ export class SocialService extends Service {
     // Setup API Routing
     socialRouting(this.app, this.db)
 
-    this.app.use((error:unknown,req:Request,res:Response,next:()=>void)=> {
-      // Report error for debugging and log aggregation, but do not disclose details to users for security
-      console.error('Uncaught Error: ', error)
-      res.status(500).send({message:'Internal Server Error - Cannot Disclose Details'})
-      next()
-    })
+    // Catch All Unhandled Errors
+    this.app.use(ErrorHandler)
 
     // Start Service App
-    this.app.listen(port, ()=> {
-      console.log('Social Service is running')
+    this.app.listen(port, (error:unknown)=> {
+      if (error) {
+        console.error('Error starting Social service: ', error)
+      } else {
+        console.log('Social Service is running')
+      }
     })
   }
 }
 
-export default function startSocialService(port:number): SocialService {
+export default async function startSocialService(port:number): Promise<SocialService> {
   const service = new SocialService()
-  service.start(port)
+  await service.start(port)
   return service
 }
