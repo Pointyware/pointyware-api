@@ -2,6 +2,8 @@ import { accountRouting } from '../accounts/account-routing.js'
 import { AccountDatabase, authSqlPool } from '../accounts/data/account-database.js'
 import { AccountController } from '../accounts/account-controller.js'
 import { Service } from '../common/service.js'
+import { ErrorHandler } from '../common/network.js'
+import type { Pool } from 'pg'
 
 /**
  * The Account Service manages all user account information, which includes
@@ -15,21 +17,30 @@ import { Service } from '../common/service.js'
  * lifecycle of the service.
  */
 export class AccountService extends Service {
-  constructor() {
+  pool: Pool
+  database: AccountDatabase
+  controller: AccountController
+  constructor(pool:Pool) {
     super()
+    this.pool = pool
+    this.database = new AccountDatabase(pool)
+    this.controller = new AccountController(this.database)
   }
 
   override async start(port:number) {
-    const pool = await authSqlPool()
-    const database = new AccountDatabase(pool)
-    const controller = new AccountController(database)
-
     // Setup Auth Routing
-    accountRouting(this.app,controller)
+    accountRouting(this.app,this.database)
+
+    // Catch All Unhandled Errors
+    this.app.use(ErrorHandler)
 
     // Start Service App
-    this.app.listen(port, ()=> {
-      console.log('Auth service is running')
+    this.app.listen(port, (error:unknown)=> {
+      if (error) {
+        console.error('Error starting Auth service: ', error)
+      } else {
+        console.log('Auth service is running')
+      }
     })
   }
 }
@@ -38,9 +49,10 @@ export class AccountService extends Service {
  * Creates and returns an {@link AccountService} while it's starting
  * on the given port.
  * @param port 
+ * @param pool 
  */
-export default function startAccountService(port:number): AccountService {
-  const service = new AccountService()
-  service.start(port)
+export default async function startAccountService(port:number,pool:Pool): Promise<AccountService> {
+  const service = new AccountService(pool)
+  await service.start(port)
   return service
 }
