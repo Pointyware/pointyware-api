@@ -1,8 +1,8 @@
 
-import { Router, type Application, type Request, type Response } from 'express'
-import { adapter, GenericResponseMapper } from '../common/adapter.js'
-import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, GetUserCommentsMapper, UpdateCommentMapper } from './adapters/comments.js'
-import { CreateComment, DeleteComment, GetComment, GetFeedComments, GetUserComments, UpdateComment } from './domain/comment-interactors.js'
+import { Router, type Application } from 'express'
+import { adapter } from '../common/adapter.js'
+import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comments.js'
+import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './domain/comment-interactors.js'
 import type { CommentDatabase, FeedDatabase, ReactionDatabase, SocialDatabase } from './data/social-db.js'
 import { DeleteReaction, SetReaction } from './domain/reaction-interactors.js'
 import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction.js'
@@ -20,33 +20,16 @@ import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './domain/
  * @param app 
  */
 export function socialRouting(app: Application, database: SocialDatabase) {
-  app.route('/feeds/feed-:feedId/comments')
-    .post(// marshall data       , pass to business layer   , marshall data back to response
-      adapter(CreateCommentMapper, CreateComment(database), GenericResponseMapper)
-    )
-  const route = app.route('/feeds/feed-:feedId')
-
-  app.route('/feeds/feed-:feedId/comments/comment-:commentId')
-  app.get('/comments/user-:userId',
-    adapter(
-      GetUserCommentsMapper,
-      GetUserComments(database)
-    )
-  )
-  // TODO: split into separate functions for comments and reactions routing
-
-  const feedsRouter = feedsRouting(app, database, database)
-  const commentsRouter = commentsRoouting(app, database)
-  const reactionsRouter = reactionsRouting(app, database)
+  const feedsRouter = feedsRouting(database, database)
+  const commentsRouter = commentsRoouting(database)
+  const reactionsRouter = reactionsRouting(database)
 
   app.use(feedsRouter)
   app.use(commentsRouter)
   app.use(reactionsRouter)
-
-  app.use(router)
 }
 
-export function feedsRouting(app: Application, feedDb: FeedDatabase, commentDb: CommentDatabase) {
+export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   const router = Router()
   const feedsRoute = router.route('/feeds')
   feedsRoute
@@ -81,7 +64,7 @@ export function feedsRouting(app: Application, feedDb: FeedDatabase, commentDb: 
   return router
 }
 
-export function commentsRoouting(app: Application, database: SocialDatabase) {
+export function commentsRoouting(database: SocialDatabase) {
   const router = Router()
   const comments = router.route('/feeds/feed-:feedId/comments')
   comments
@@ -112,7 +95,7 @@ export function commentsRoouting(app: Application, database: SocialDatabase) {
     return router
 }
 
-export function reactionsRouting(app: Application, database: ReactionDatabase) {
+export function reactionsRouting(database: ReactionDatabase) {
   const router = Router()
   const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
   reactionsRoute
