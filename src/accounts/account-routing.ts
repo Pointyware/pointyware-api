@@ -1,8 +1,8 @@
 
 import express from 'express'
 import type { AccountDatabase } from './data/account-database.js'
-import { CreateAccount, GetAccount, Login, Logout, UpdateAccount } from './domain/accounts.js'
-import { CreateAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper } from './adapters/account.js'
+import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './domain/accounts.js'
+import { CreateAccountCommandMapper, DeleteAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper, UpdateAccountCommandMapper } from './adapters/account.js'
 import { adapter } from '../common/adapter.js'
 
 /**
@@ -14,24 +14,6 @@ export function accountRouting(
   accountDatabase: AccountDatabase
 ) {
 
-  // Create New Account
-  
-  app.post('/account/', adapter(
-    CreateAccountMapper,
-    CreateAccount(accountDatabase)
-  ))
-
-  app.post('/login', async (req, res) => {
-    // 1. decode request into appropriate model
-    const username = ""
-    const password = ""
-    
-    // 2. Invoke controller/interactor
-    const token = await controller.login(username, password)
-
-    // 3. encode result into response
-    res.send(token)
-  })
   app.post('/login', adapter(
     LoginCommandMapper,
     Login(accountDatabase)
@@ -61,7 +43,7 @@ export function accountRouting(
       GetAccount(accountDatabase)
     ))
     .put(adapter(
-      UpdateAccount,
+      UpdateAccountCommandMapper,
       UpdateAccount(accountDatabase)
     ))
     .delete(adapter(

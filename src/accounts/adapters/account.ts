@@ -1,7 +1,7 @@
 
 import { type Request } from "express"
 import type { AccountAuthDto, UserIdDto } from "../../data/dtos.js"
-import type { CreateAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/accounts.js"
+import type { CreateAccountCommand, DeleteAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/accounts.js"
 
 
 export function CreateAccountCommandMapper(
@@ -23,6 +23,13 @@ export function UpdateAccountCommandMapper(
     userId: req.params.userId,
     username: req.body.username,
     email: req.body.email
+  }
+}
+export function DeleteAccountCommandMapper(
+  req: Request<UserIdDto, any, any, any>
+): DeleteAccountCommand {
+  return {
+    accountId: req.params.userId
   }
 }
 

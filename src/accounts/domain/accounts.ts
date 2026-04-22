@@ -8,6 +8,9 @@ export interface UserQuery {
 export interface GetAccountCommand { // FIXME: reconcile with UserQuery
   accountId:UUID
 }
+export interface DeleteAccountCommand {
+  accountId:UUID
+}
 
 export type UserId = UUID
 export interface UserHandle {
@@ -62,9 +65,9 @@ export function UpdateAccount(database:AccountDatabase): (command:EditUser) => P
   }
 }
 
-export function DeleteAccount(database:AccountDatabase): (command:UserHandle) => Promise<void> {
-  return async function(command:UserHandle): Promise<void> {
-    await database.removeAccount(command.userId)
+export function DeleteAccount(database:AccountDatabase): (command:DeleteAccountCommand) => Promise<void> {
+  return async function(command:DeleteAccountCommand): Promise<void> {
+    await database.removeAccount(command.accountId)
   }
 }
 
