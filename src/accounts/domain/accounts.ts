@@ -1,5 +1,5 @@
 import type { UUID } from "crypto";
-import { Account } from "../entities/account.js";
+import { Account, type ProfileImage } from "../entities/account.js";
 import type { AccountDatabase } from "../data/account-database.js";
 
 export interface UserQuery {
@@ -13,9 +13,22 @@ export type UserId = UUID
 export interface UserHandle {
   userId:UserId
 }
+/**
+ * Publicly accessible information about a user.
+ */
+interface UserInfo {
+  username:string
+  image:ProfileImage
+}
+interface ContactInfo {
+  email?:string
+  phoneNumber?:string
+}
+
 export interface NewUser {
   username:string
-  email:string
+  email?:string
+  phoneNumber?:string
 }
 export type EditUser = NewUser & UserHandle
 

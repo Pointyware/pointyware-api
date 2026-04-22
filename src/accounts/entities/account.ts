@@ -34,8 +34,9 @@ export type User = Profile & Account
  * default image. They can choose to override the default with an image given
  * by some URL.
  */
-interface ProfileImage {
+export interface ProfileImage {
   // TODO: define image function(s)
+  getImage(): ImageBitmap
 }
 /**
  * Presents a default silhouette and background in the given color.
@@ -45,6 +46,10 @@ export class DefaultImage implements ProfileImage {
   constructor(color:string) {
     this.color = color
   }
+
+  getImage(): ImageBitmap {
+    throw "Not implemented"
+  }
 }
 /**
  * Presents an image identified by a URL.
@@ -53,5 +58,9 @@ export class UrlImage implements ProfileImage {
   url:URL
   constructor(url:URL) {
     this.url = url
+  }
+
+  getImage(): ImageBitmap {
+    throw "Not implemented"
   }
 }

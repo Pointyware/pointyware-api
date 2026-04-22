@@ -1,36 +1,9 @@
 
 import express from 'express'
-import { AccountController } from './account-controller.js'
-import type { UserIdDto } from '../data/dtos.js'
-
-/**
- * Information for creating a new user.
- */
-interface NewUser {
-  username:string
-  password:string
-  email?:string
-  phoneNumber?:string
-}
-
-/**
- * Publicly accessible information about a user.
- */
-interface UserInfo {
-  username:string
-  profileImage:ProfileImage
-}
-
-interface ProfileImage {
-  getImage(): ImageBitmap
-}
-interface DefaultImage extends ProfileImage {
-  color:string
-}
-interface UrlImage extends ProfileImage {
-  url:URL
-}
-
+import type { AccountDatabase } from './data/account-database.js'
+import { CreateAccount, GetAccount, Login, Logout, UpdateAccount } from './domain/accounts.js'
+import { CreateAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper } from './adapters/account.js'
+import { adapter } from '../common/adapter.js'
 
 /**
  * TODO: rename to Router and refactor to use express.Router() objects
@@ -38,24 +11,15 @@ interface UrlImage extends ProfileImage {
  */
 export function accountRouting(
   app:express.Application,
-  controller: AccountController,
+  accountDatabase: AccountDatabase
 ) {
 
   // Create New Account
-  app.post('/account/', async (
-    req: express.Request<any, any, NewUser>,
-    res
-  ) => {
-    const body = req.body
-
-    try {
-      const account = await controller.createAccount(body.username, body.password, body.email, body.phoneNumber)
-
-      res.send(account)
-    } catch (error) {
-      res.status(500).send({message:'Generic Error Occurred'})
-    }
-  })
+  
+  app.post('/account/', adapter(
+    CreateAccountMapper,
+    CreateAccount(accountDatabase)
+  ))
 
   app.post('/login', async (req, res) => {
     // 1. decode request into appropriate model
@@ -68,10 +32,15 @@ export function accountRouting(
     // 3. encode result into response
     res.send(token)
   })
+  app.post('/login', adapter(
+    LoginCommandMapper,
+    Login(accountDatabase)
+  ))
 
-  app.post('/logout', (req, res) => {
-    // 1. decode request into model
-  })
+  app.post('/logout', adapter(
+    LogoutCommandMapper,
+    Logout(accountDatabase)
+  ))
 
   // TODO: add OAuth endpoints/flow
 
@@ -79,32 +48,24 @@ export function accountRouting(
 
   })
 
-  app.post('/account', async (
-    req: express.Request<any, any, NewUser, any>, 
-    res
-  )=>{
-    console.info('Creating new user: ', req.body)
-    res.send('Ok')
-  })
-  app.get('/account:userId', async (
-    req: express.Request<UserIdDto, any, any, any>, 
-    res
-  )=>{
-    console.info('Getting user: ', req.params)
-    res.send('Ok')
-  })
-  app.put('/account/:userId', async (
-    req: express.Request<UserIdDto, any, UserInfo, any>,
-    res
-  )=>{
-    console.info('Updating user: ', req.params)
-    res.send('Ok')
-  })
-  app.delete('/account/:userId', async (
-    req: express.Request<UserIdDto, any, any, any>, 
-    res
-  )=>{
-    console.info('Deleting user: ', req.params)
-    res.send('Ok')
-  })
+  app
+    .route('/account')
+      .post(adapter(
+        CreateAccountCommandMapper,
+        CreateAccount(accountDatabase)
+      ))
+  app
+  .route('/account/:userId')
+    .get(adapter(
+      GetAccountCommandMapper,
+      GetAccount(accountDatabase)
+    ))
+    .put(adapter(
+      UpdateAccount,
+      UpdateAccount(accountDatabase)
+    ))
+    .delete(adapter(
+      DeleteAccountCommandMapper,
+      DeleteAccount(accountDatabase)
+    ))
 }
