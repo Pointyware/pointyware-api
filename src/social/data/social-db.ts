@@ -22,6 +22,7 @@ CREATE TABLE comments (
 export interface FeedDatabase {
   createFeed(title:string): Promise<Feed>
   readFeed(id:UUID): Promise<Feed>
+  readFeeds(): Promise<Feed[]>
   updateFeed(id:UUID,title:string): Promise<Feed>
   deleteFeed(id:UUID): Promise<void>
 }
@@ -33,27 +34,37 @@ export interface CommentDatabase {
   deleteComment(id:UUID): Promise<void>
 }
 export interface ReactionDatabase {
-  upsertCommentReaction(commentId:UUID,reaction:Reaction): Promise<Reaction[]>
-  readCommentReactions(commentId:UUID): Promise<Reaction[]>
+  upsertReaction(commentId:UUID,reaction:Reaction): Promise<Reaction[]>
+  readReactions(commentId:UUID): Promise<Reaction[]>
+  deleteReaction(commentId:UUID): Promise<void>
 }
-export class SocialDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
+export class SocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
   private db: DatabaseSync
   constructor(path:string=':memory:') {
     this.db = new DatabaseSync(path)
   }
 
-  async createComment(feedId:UUID,content:string,parentId?:UUID,): Promise<Comment> {
+  async createFeed(title:string): Promise<Feed> {
+
+  }
+  async readFeed(id:UUID): Promise<Feed> {}
+  async readFeeds(): Promise<Feed[]> {}
+  async updateFeed(id:UUID,title:string): Promise<Feed> {}
+  async deleteFeed(id:UUID): Promise<void> {}
+
+  async createComment(content:string,feedId:UUID,parentId?:UUID): Promise<Comment> {
     
     return new Promise<Comment>((resolve,reject)=>{
       try {
         const uuid = randomUUID() // generate a UUID for the comment
+        const safeId = parentId || '' // TODO: replace with null UUID?
         const statement = this.db.prepare(`
-          INSERT INTO comments (feed_id,parent_id,content)
-          VALUES ($feedId,$parentId,$content)
+          INSERT INTO comments (feed_id,parent_id,content,uuid)
+          VALUES ($feedId,$parentId,$content,$uuid)
           `)
           statement.run({
             feedId: feedId,
-            parentId: parentId,
+            parentId: safeId,
             content: content,
             uuid: uuid
           }) 
@@ -65,8 +76,12 @@ export class SocialDatabase { // TODO: implement feed, comment, reaction databas
       }
     )
   }
+
+  async readComment(id:UUID): Promise<Comment> {
+
+  }
   
-  async getComments(feedId:string): Promise<Comment[]> {
+  async readComments(feedId:UUID): Promise<Comment[]> {
     const statement = this.db.prepare('SELECT (comment_id,content) FROM comments WHERE feed_id=$feedId LIMIT 10')
     const result = statement.all({
       feedId:feedId
@@ -80,12 +95,30 @@ export class SocialDatabase { // TODO: implement feed, comment, reaction databas
     
     return commentList
   }
-  setComment(id: string, content: string) {
+  updateComment(id:UUID,content:string): Promise<Comment>
+  async updateComment(id: UUID, content: string): Promise<Comment> {
     // TODO: attempt to overwrite comment
-  
-  }
-  async deleteComment(id: string) {
 
+    return new Comment(content, id)
+  }
+  deleteComment(id:UUID): Promise<void>
+  async deleteComment(id: UUID) {
+    // TODO: remove comment from database
+  }
+
+
+  async upsertReaction(commentId: UUID, reaction: Reaction): Promise<Reaction[]> {
+    // TODO: upsert reaction for comment, then return all reactions for comment
+  }
+  
+  async readReactions(commentId: UUID): Promise<Reaction[]> {
+    // TODO: 
+    return []
+  }
+
+
+  async deleteReaction(commentId: UUID) {
+    // TODO: delete reaction for comment
   }
 }
 
