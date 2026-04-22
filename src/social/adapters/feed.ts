@@ -1,11 +1,4 @@
 
-/*
-TODO: Feed CRUD
-  - create feed
-  - get feed details
-  - update feed details
-  - delete feed
-*/
 import type { Request } from 'express'
 import type { CreateFeedCommand, DeleteFeedCommand, GetFeedQuery, GetFeedsQuery, UpdateFeedCommand } from "../domain/feed-interactor.js"
 import type { FeedDto, FeedIdDto } from '../../data/dtos.js'
