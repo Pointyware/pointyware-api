@@ -1,6 +1,5 @@
 import type { UUID } from "crypto"
 import type { SocialDatabase } from "../data/social-db.js"
-import type { SocialController } from "../social-controller.js"
 
 export interface CreateCommentCommand {
   feedId:UUID
@@ -26,31 +25,31 @@ export function CreateComment(database: SocialDatabase): (command:CreateCommentC
     return database.createComment(command.feedId, command.parentId || '', command.content)
   }
 }
-export function GetComment(controller: SocialController): (query:CommentQuery)=>Promise<Comment[]> {
+export function GetComment(database: SocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
   return (query:CommentQuery)=> {
-    return controller.getComments(query.id)
+    return database.readComments(query.id)
   }
 }
-export function GetComments(controller: SocialController): (query:CommentQuery)=>Promise<Comment[]> {
+export function GetComments(database: SocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
   return (query:CommentQuery)=> {
-    return controller.getComments(query.id)
+    return database.readComments(query.id)
   }
 }
-export function GetUserComments(controller: SocialController): (query:UserQuery)=>Promise<Comment[]> {
+export function GetUserComments(database: SocialDatabase): (query:UserQuery)=>Promise<Comment[]> {
   return (query:UserQuery)=> {
-    return controller.getComments(query.userId)
+    return database.readComments(query.userId)
   }
 }
 
-export function UpdateComment(controller: SocialController) {
+export function UpdateComment(database: SocialDatabase) {
   return (command:UpdateCommentCommand)=> {
-    return controller.updateComment(command.id, command.content)
+    return database.updateComment(command.id, command.content)
   }
 }
 
-export function DeleteComment(controller: SocialController) {
+export function DeleteComment(database: SocialDatabase) {
   return (command:DeleteCommentCommand)=> {
-    return controller.deleteComment(command.id)
+    return database.deleteComment(command.id)
   }
 }
 

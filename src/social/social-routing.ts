@@ -1,10 +1,9 @@
 
-
 import { Router, type Application, type Request, type Response } from 'express'
-import { SocialController } from './social-controller.js'
 import { adapter, GenericResponseMapper } from '../common/adapter.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetUserCommentsMapper, UpdateCommentMapper } from './adapters/comments.js'
-import { CreateComment, DeleteComment, GetComments, GetUserComments, UpdateComment } from './domain/comments.js'
+import { CreateComment, DeleteComment, GetComments, GetUserComments, UpdateComment } from './domain/comment-interactors.js'
+import type { SocialDatabase } from './data/social-db.js'
 
 /**
  * What is the single responsibility of a router?
@@ -16,10 +15,10 @@ import { CreateComment, DeleteComment, GetComments, GetUserComments, UpdateComme
  * Isn't that 
  * @param app 
  */
-export function socialRouting(app: Application, controller: SocialController) {
+export function socialRouting(app: Application, database: SocialDatabase) {
   app.route('/feeds/feed-:feedId/comments')
     .post(// marshall data       , pass to business layer   , marshall data back to response
-      adapter(CreateCommentMapper, CreateComment(controller), GenericResponseMapper)
+      adapter(CreateCommentMapper, CreateComment(database), GenericResponseMapper)
     )
   const route = app.route('/feeds/feed-:feedId')
 
@@ -27,17 +26,26 @@ export function socialRouting(app: Application, controller: SocialController) {
   app.get('/comments/user-:userId',
     adapter(
       GetUserCommentsMapper,
-      GetUserComments(controller)
+      GetUserComments(database)
     )
   )
   // TODO: split into separate functions for comments and reactions routing
+
+  const feedsRouter = feedsRouting(app)
+  const commentsRouter = commentsRoouting(app, database)
+  const reactionsRouter = reactionsRouting(app)
+
+  app.use(feedsRouter)
+  app.use(commentsRouter)
+  app.use(reactionsRouter)
+
+  app.use(router)
+}
+
+export function feedsRouting(app: Application) {
   const router = Router()
   const feedsRoute = router.route('/feeds')
   const feedIdRoute = router.route('/feeds/feed-:feedId')
-  const comments = router.route('/feeds/feed-:feedId/comments')
-  const commentIdRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId')
-  const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
-
   feedsRoute
     .post()
     .get()
@@ -60,6 +68,13 @@ export function socialRouting(app: Application, controller: SocialController) {
       RemoveComment(controller)
     ))
 
+    return router
+}
+
+export function commentsRoouting(app: Application, database: SocialDatabase) {
+  const router = Router()
+  const comments = router.route('/feeds/feed-:feedId/comments')
+  const commentIdRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId')
   comments
     .post()
     .get()
@@ -67,18 +82,41 @@ export function socialRouting(app: Application, controller: SocialController) {
   commentIdRoute
     .post(adapter(
       CreateCommentMapper,
-      CreateComment(controller)
+      CreateComment(database)
     )).get(adapter(
       GetCommentMapper, 
-      GetComments(controller)
+      GetComments(database)
     )).put(adapter(
       UpdateCommentMapper,
-      UpdateComment(controller)
+      UpdateComment(database)
     )).delete(adapter(
       DeleteCommentMapper, 
-      DeleteComment(controller)
+      DeleteComment(database)
     ))
-  
+    return router
+}
+
+export function reactionsRouting(app: Application) {
+  const router = Router()
+  const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
+  return Router()
+    .route('')
+    .get(async (
+      req: Request,
+      res: Response
+    )=>{
+
+    }).post(async (
+      req: Request,
+      res: Response
+    )=>{
+
+    }).put(async (
+      req: Request,
+      res: Response
+    )=>{
+
+    })
   reactionsRoute
     .put((
       req: Request,
@@ -87,31 +125,5 @@ export function socialRouting(app: Application, controller: SocialController) {
       
     })
 
-  app.use(router)
-}
-
-export function commentsRoouting(app: Application, controller: SocialController) {
-
-}
-
-export function reactionsRouting(app: Application, controller: SocialController) {
-  const router = Router()
-  return Router()
-  .route('')
-  .get(async (
-    req: Request,
-    res: Response
-  )=>{
-
-  }).post(async (
-    req: Request,
-    res: Response
-  )=>{
-
-  }).put(async (
-    req: Request,
-    res: Response
-  )=>{
-
-  })
+  return router
 }

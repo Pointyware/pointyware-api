@@ -1,6 +1,6 @@
 import type { CommentDto, CommentIdDto, UserIdDto } from "../../data/dtos.js"
 import type { Request } from 'express'
-import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand } from "../domain/comments.js"
+import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand } from "../domain/comment-interactors.js"
 import type { UserQuery } from "../../accounts/domain/accounts.js"
 
 /*
