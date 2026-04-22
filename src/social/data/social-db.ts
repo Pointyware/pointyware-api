@@ -1,14 +1,15 @@
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite"
-import { Comment } from "../entities/comment.js"
-import { randomUUID, type UUID } from "node:crypto"
-import { PgFacade } from "../../data/pg-facade.js"
+import { randomUUID, type UUID } from "crypto"
 import type { Pool } from "pg"
+import { PgFacade } from "../../data/pg-facade.js"
+import { Comment } from "../entities/comment.js"
 import type { Feed } from "../entities/feed.js"
 import type { Reaction } from "../entities/reaction.js"
 
 const TABLE_FEEDS = `
 CREATE TABLE feeds (
   feed_id INT PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL
 );`
 
 const TABLE_COMMENTS = `
@@ -45,12 +46,42 @@ export class SocialDatabase implements FeedDatabase, CommentDatabase, ReactionDa
   }
 
   async createFeed(title:string): Promise<Feed> {
-
+    const uuid = randomUUID() // generate a UUID for the feed
+    const statement = this.db.prepare(`
+      INSERT INTO feeds (feed_id,title)
+      VALUES ($feedId,$title)
+      `)
+    statement.run({
+      feedId: uuid,
+      title: title
+    }) 
+    return {
+      id: uuid,
+      title: title,
+      comments: []
+    }
   }
-  async readFeed(id:UUID): Promise<Feed> {}
-  async readFeeds(): Promise<Feed[]> {}
-  async updateFeed(id:UUID,title:string): Promise<Feed> {}
-  async deleteFeed(id:UUID): Promise<void> {}
+  async readFeed(id:UUID): Promise<Feed> {
+
+    return {
+      id: id,
+      title: 'Example Feed',
+      comments: []
+    }
+  }
+  async readFeeds(): Promise<Feed[]> {
+    return []
+  }
+  async updateFeed(id:UUID,title:string): Promise<Feed> {
+    return {
+      id: id,
+      title: title,
+      comments: []
+    }
+  }
+  async deleteFeed(id:UUID): Promise<void> {
+    // TODO: delete feed from database
+  }
 
   async createComment(content:string,feedId:UUID,parentId?:UUID): Promise<Comment> {
     
@@ -78,7 +109,8 @@ export class SocialDatabase implements FeedDatabase, CommentDatabase, ReactionDa
   }
 
   async readComment(id:UUID): Promise<Comment> {
-
+    // TODO: read comment from database by id and return
+    return new Comment('Example Comment', id)
   }
   
   async readComments(feedId:UUID): Promise<Comment[]> {
@@ -109,6 +141,7 @@ export class SocialDatabase implements FeedDatabase, CommentDatabase, ReactionDa
 
   async upsertReaction(commentId: UUID, reaction: Reaction): Promise<Reaction[]> {
     // TODO: upsert reaction for comment, then return all reactions for comment
+    return []
   }
   
   async readReactions(commentId: UUID): Promise<Reaction[]> {
