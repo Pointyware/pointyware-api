@@ -65,7 +65,7 @@ export class CommentInteractor {
     this.database = database
   }
   create(command: CreateCommentCommand): Promise<Comment> {
-    return this.database.createComment(command.feedId, command.content, command.parentId || '')
+    return this.database.createComment(command.content, command.feedId, command.parentId)
   }
   get(query: CommentQuery): Promise<Comment[]> {
     return this.database.readComments(query.commentId)
