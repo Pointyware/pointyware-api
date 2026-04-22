@@ -1,5 +1,7 @@
 import type { UUID } from "crypto"
-import type { SocialDatabase } from "../data/social-db.js"
+import type { CommentDatabase, FeedDatabase, SocialDatabase } from "../data/social-db.js"
+import type { Comment } from "../entities/comment.js"
+import type { UserQuery } from "../../accounts/domain/accounts.js"
 
 export interface CreateCommentCommand {
   feedId:UUID
@@ -8,7 +10,11 @@ export interface CreateCommentCommand {
 }
 
 export interface CommentQuery {
-  id:UUID
+  commentId:UUID
+}
+export interface CommentsQuery {
+  feedId:UUID
+  parentId?:UUID
 }
 
 export interface UpdateCommentCommand {
@@ -20,19 +26,19 @@ export interface DeleteCommentCommand {
   id:UUID
 }
 
-export function CreateComment(database: SocialDatabase): (command:CreateCommentCommand) => Promise<Comment> {
-  return (command:CreateCommentCommand)=> {
-    return database.createComment(command.feedId, command.parentId || '', command.content)
+export function CreateComment(database: CommentDatabase): (command:CreateCommentCommand) => Promise<Comment> {
+  return async (command:CreateCommentCommand)=> {
+    return database.createComment(command.content, command.feedId, command.parentId)
   }
 }
 export function GetComment(database: SocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
   return (query:CommentQuery)=> {
-    return database.readComments(query.id)
+    return database.readComments(query.commentId)
   }
 }
-export function GetComments(database: SocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
-  return (query:CommentQuery)=> {
-    return database.readComments(query.id)
+export function GetFeedComments(database: SocialDatabase): (query:CommentsQuery)=>Promise<Comment[]> {
+  return (query:CommentsQuery)=> {
+    return database.readComments(query.feedId)
   }
 }
 export function GetUserComments(database: SocialDatabase): (query:UserQuery)=>Promise<Comment[]> {
@@ -59,9 +65,9 @@ export class CommentInteractor {
     this.database = database
   }
   create(command: CreateCommentCommand): Promise<Comment> {
-    return this.database.createComment(command.feedId || '', command.parentId || '', command.content)
+    return this.database.createComment(command.feedId, command.content, command.parentId || '')
   }
   get(query: CommentQuery): Promise<Comment[]> {
-    return this.database
+    return this.database.readComments(query.commentId)
   }
 }
