@@ -1,6 +1,6 @@
-import type { CommentDto, CommentIdDto, UserIdDto } from "../../data/dtos.js"
+import type { CommentDto, CommentIdDto, FeedIdDto, UserIdDto } from "../../data/dtos.js"
 import type { Request } from 'express'
-import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand } from "../domain/comment-interactors.js"
+import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand, CommentsQuery } from "../domain/comment-interactors.js"
 import type { UserQuery } from "../../accounts/domain/accounts.js"
 
 /*
@@ -11,13 +11,19 @@ TODO: include Zod
 */
 export function CreateCommentMapper(req:Request<CommentIdDto,any,CommentDto,any>): CreateCommentCommand {
   return {
-    parent: req.params.commentId,
+    feedId: req.params.feedId,
+    parentId: req.params.commentId,
     content: req.body.content
   }
 }
 export function GetCommentMapper(req:Request<CommentIdDto,any,any,any>): CommentQuery {
   return {
-    id: req.params.commentId
+    commentId: req.params.commentId
+  }
+}
+export function GetFeedCommentsMapper(req:Request<FeedIdDto,any,any,any>): CommentsQuery {
+  return {
+    feedId: req.params.feedId
   }
 }
 
