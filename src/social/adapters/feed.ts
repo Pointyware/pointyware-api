@@ -3,12 +3,6 @@ import type { Request } from 'express'
 import type { CreateFeedCommand, DeleteFeedCommand, GetFeedQuery, GetFeedsQuery, UpdateFeedCommand } from "../domain/feed-interactor.js"
 import type { FeedDto, FeedIdDto } from '../../data/dtos.js'
 
-/*
-TODO: include Zod
-  1. validate request data and return 400 with schema validation errors if invalid
-  2. use validated data to map to service models
-  3. bind service response to http response with appropriate status codes
-*/
 export function CreateFeedMapper(req:Request<any,any,FeedDto,any>): CreateFeedCommand {
   return {
     authorId: req.user?.id, // assuming authentication middleware has set req.user

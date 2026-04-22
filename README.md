@@ -153,3 +153,9 @@ Creates endpoints:
     - POST,PUT,DELETE are all nonsense
   - DELETE /comment-UUID delete specific comment
   - 
+
+
+TODO: include Zod
+1. validate request data in adapter layer and return 400 with schema validation errors if invalid
+2. use validated data to map to service models
+3. bind service response to http response with appropriate status codes
