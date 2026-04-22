@@ -2,8 +2,12 @@
 /**
  * All errors defined by this service should extend ServiceError
  */
-export class ServiceError {
-  constructor() {}
+export class ServiceError extends Error {
+  cause?:unknown
+  constructor(cause?:unknown) {
+    super()
+    this.cause = cause
+  }
 }
 /**
  * Determines whether the given error is of the ServiceError hierarchy or not.
@@ -21,8 +25,8 @@ export function isServiceError(error: unknown): error is ServiceError {
  */
 export class ResourceAccessError extends ServiceError {
   resource: string
-  constructor(resource:string) {
-    super()
+  constructor(resource:string,cause?:unknown) {
+    super(cause)
     this.resource = resource
   }
 }
@@ -32,7 +36,7 @@ export class ResourceAccessError extends ServiceError {
  * HTTP Status 401
 */
 export class UnauthorizedError extends ResourceAccessError {
-  constructor(resource:string) {super(resource)}
+  constructor(resource:string,cause?:unknown) {super(resource,cause)}
 }
 /**
  * The user is known but does not have access to the resource.
@@ -40,7 +44,7 @@ export class UnauthorizedError extends ResourceAccessError {
  * HTTP Status 402
 */
 export class ForbiddenError extends ResourceAccessError{
-  constructor(resource:string) {super(resource)}
+  constructor(resource:string,cause?:unknown) {super(resource,cause)}
 }
 /**
  * The requested resource does not exist 
@@ -49,5 +53,5 @@ export class ForbiddenError extends ResourceAccessError{
  * HTTP Status 404
  */
 export class DoesNotExistError extends ResourceAccessError {
-  constructor(resource:string) {super(resource)}
+  constructor(resource:string,cause?:unknown) {super(resource,cause)}
 }
