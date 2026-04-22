@@ -3,9 +3,15 @@ import type { Reaction } from "../social/entities/reaction.js";
 
 /**
  * Identifies a single id for a single user.
+ * // TODO: rename to AccountIdDto
  */
 export interface UserIdDto {
   userId:UUID
+}
+
+export interface AccountAuthDto {
+  username:string
+  password:string
 }
 
 /**
@@ -34,11 +40,6 @@ export interface CommentIdDto {
  */
 export interface CommentDto {
   content:string
-}
-
-export interface AccountAuthDto {
-  username:string
-  password:string
 }
 
 export interface ReactionDto {
