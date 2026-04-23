@@ -1,9 +1,9 @@
 import { accountRouting } from '../accounts/account-routing.js'
-import { AccountDatabase, authSqlPool } from '../accounts/data/account-database.js'
-import { AccountController } from '../accounts/account-controller.js'
+import { AccountDatabase } from '../accounts/data/account-database.js'
 import { Service } from '../common/service.js'
 import { ErrorHandler } from '../common/network.js'
 import type { Pool } from 'pg'
+import { AccountInteractor } from './domain/account-interactors.js'
 
 /**
  * The Account Service manages all user account information, which includes
@@ -19,12 +19,12 @@ import type { Pool } from 'pg'
 export class AccountService extends Service {
   pool: Pool
   database: AccountDatabase
-  controller: AccountController
+  interactor: AccountInteractor
   constructor(pool:Pool) {
     super()
     this.pool = pool
     this.database = new AccountDatabase(pool)
-    this.controller = new AccountController(this.database)
+    this.interactor = new AccountInteractor(this.database)
   }
 
   override async start(port:number) {
