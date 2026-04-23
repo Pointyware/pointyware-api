@@ -1,10 +1,9 @@
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite"
 import { randomUUID, type UUID } from "crypto"
-import type { Pool } from "pg"
-import { PgFacade } from "../../data/pg-facade.js"
 import { Comment } from "../entities/comment.js"
 import type { Feed } from "../entities/feed.js"
 import type { Reaction } from "../entities/reaction.js"
+import type { FeedDatabase, CommentDatabase, ReactionDatabase } from "./social-databases.js"
 
 const TABLE_FEEDS = `
 CREATE TABLE feeds (
@@ -20,25 +19,6 @@ CREATE TABLE comments (
   content TEXT NOT NULL
 );`
 
-export interface FeedDatabase {
-  createFeed(title:string): Promise<Feed>
-  readFeed(id:UUID): Promise<Feed>
-  readFeeds(): Promise<Feed[]>
-  updateFeed(id:UUID,title:string): Promise<Feed>
-  deleteFeed(id:UUID): Promise<void>
-}
-export interface CommentDatabase {
-  createComment(content:string,feedId:UUID,parentId?:UUID): Promise<Comment>
-  readComment(id:UUID): Promise<Comment>
-  readComments(feedId:UUID): Promise<Comment[]>
-  updateComment(id:UUID,content:string): Promise<Comment>
-  deleteComment(id:UUID): Promise<void>
-}
-export interface ReactionDatabase {
-  upsertReaction(commentId:UUID,reaction:Reaction): Promise<Reaction[]>
-  readReactions(commentId:UUID): Promise<Reaction[]>
-  deleteReaction(commentId:UUID): Promise<void>
-}
 export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
   private db: DatabaseSync
   constructor(path:string=':memory:') {
@@ -83,7 +63,7 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
     // TODO: delete feed from database
   }
 
-  async createComment(content:string,feedId:UUID,parentId?:UUID): Promise<Comment> {
+  async createComment(feedId:UUID,content:string,parentId?:UUID): Promise<Comment> {
     
     return new Promise<Comment>((resolve,reject)=>{
       try {
@@ -108,7 +88,7 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
     )
   }
 
-  async readComment(id:UUID): Promise<Comment> {
+  async readComment(feedId:UUID,id:UUID): Promise<Comment> {
     // TODO: read comment from database by id and return
     return new Comment('Example Comment', id)
   }
@@ -127,7 +107,7 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
     
     return commentList
   }
-  updateComment(id:UUID,content:string): Promise<Comment>
+  updateComment(feedId:UUID,id:UUID,content:string): Promise<Comment>
   async updateComment(id: UUID, content: string): Promise<Comment> {
     // TODO: attempt to overwrite comment
 
@@ -153,12 +133,4 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
   async deleteReaction(commentId: UUID) {
     // TODO: delete reaction for comment
   }
-}
-
-
-export function resourcePool(): Pool {
-  return PgFacade.getPool(
-    'pointyware-api',
-    'apiUser','apiPass','localhost',5001,'social'
-  )
 }
