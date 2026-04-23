@@ -39,7 +39,7 @@ export interface ReactionDatabase {
   readReactions(commentId:UUID): Promise<Reaction[]>
   deleteReaction(commentId:UUID): Promise<void>
 }
-export class SocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
+export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
   private db: DatabaseSync
   constructor(path:string=':memory:') {
     this.db = new DatabaseSync(path)
