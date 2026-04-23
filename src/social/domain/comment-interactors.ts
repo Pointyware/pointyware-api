@@ -1,7 +1,7 @@
 import type { UUID } from "crypto"
 import type { CommentDatabase, SocialDatabase } from "../data/social-db.js"
 import type { Comment } from "../entities/comment.js"
-import type { UserQuery } from "../../accounts/domain/accounts.js"
+import type { UserQuery } from "../../accounts/domain/account-interactors.js"
 
 export interface CreateCommentCommand {
   feedId:UUID

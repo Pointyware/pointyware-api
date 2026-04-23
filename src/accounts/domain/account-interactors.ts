@@ -1,6 +1,7 @@
 import type { UUID } from "crypto";
 import { Account, type ProfileImage } from "../entities/account.js";
 import type { AccountDatabase } from "../data/account-database.js";
+import { Token } from "../entities/token.js";
 
 export interface UserQuery {
   userId:UUID
@@ -44,7 +45,7 @@ export interface LoginCommand {
   password:string
 }
 export interface LogoutCommand {
-  userId:UUID
+  tokenId:UUID
 }
 
 export function CreateAccount(database:AccountDatabase): (command:CreateAccountCommand)=>Promise<Account> {
@@ -67,7 +68,7 @@ export function UpdateAccount(database:AccountDatabase): (command:EditUser) => P
 
 export function DeleteAccount(database:AccountDatabase): (command:DeleteAccountCommand) => Promise<void> {
   return async function(command:DeleteAccountCommand): Promise<void> {
-    await database.removeAccount(command.accountId)
+    await database.deleteAccount(command.accountId)
   }
 }
 
@@ -82,5 +83,40 @@ export function Logout(database:AccountDatabase): (command:LogoutCommand) => Pro
   return async function(command:LogoutCommand): Promise<void> {
     // TODO: remove session or token associated with user
     
+  }
+}
+
+export class AccountInteractor {
+  database: AccountDatabase
+  constructor(database: AccountDatabase) {
+    this.database = database
+  }
+
+  createAccount(command: CreateAccountCommand): Promise<Account> {
+    // 
+    return this.database.createAccount(command.username, command.password)
+  }
+  getAccount(query: GetAccountCommand): Promise<Account> {
+    // 
+    return this.database.readAccount(query.accountId)
+  }
+  updateAccount(command:EditUser): Promise<Account> {
+    // 
+    return this.database.updateAccount(command.userId, command.username)
+  }
+  deleteAccount(command:DeleteAccountCommand) {
+    // 
+    return this.database.deleteAccount(command.accountId)
+  }
+  async login(command:LoginCommand): Promise<Token> {
+    // TODO: get password hash from database and compare with provided password
+    // TODO: create session token for user and return on success
+    // TODO: log failure and return 
+    this.database.createSession('' as UUID, 'deviceInfo') // TODO: get userId from username, not hardcoded and get deviceInfo from request
+    return new Token('testToken',new Date(Date.now() + 3600 * 1000))
+  }
+  async logout(command:LogoutCommand) {
+    // TODO: remove session or token associated with user/device
+    return this.database.deleteSession(command.tokenId)
   }
 }

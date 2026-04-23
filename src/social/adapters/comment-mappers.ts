@@ -1,7 +1,7 @@
 import type { CommentDto, CommentIdDto, FeedIdDto, UserIdDto } from "../../data/dtos.js"
 import type { Request } from 'express'
 import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand, CommentsQuery } from "../domain/comment-interactors.js"
-import type { UserQuery } from "../../accounts/domain/accounts.js"
+import type { UserQuery } from "../../accounts/domain/account-interactors.js"
 
 /*
 TODO: include Zod
