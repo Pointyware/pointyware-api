@@ -3,6 +3,12 @@ import type { Request } from 'express'
 import type { CreateFeedCommand, DeleteFeedCommand, GetFeedQuery, GetFeedsQuery, UpdateFeedCommand } from "../domain/feed-interactor.js"
 import type { FeedDto, FeedIdDto } from '../../data/dtos.js'
 
+export class FeedMapper {
+  constructor() {
+
+  }
+}
+
 export function CreateFeedMapper(req:Request<any,any,FeedDto,any>): CreateFeedCommand {
   return {
     authorId: req.user?.id, // assuming authentication middleware has set req.user
