@@ -69,3 +69,15 @@ export class FeedInteractor {
     return this.database.deleteFeed(command.feedId)
   }
 }
+export class DelegateFeedInteractor {
+  database: FeedDatabase
+  constructor(database: FeedDatabase) {
+    this.database = database
+  }
+  createFeed = (command:CreateFeedCommand)=> { CreateFeed(this.database)(command) }
+  getFeed = (query:GetFeedQuery) => { GetFeed(this.database)(query) }
+  getFeeds = (query:GetFeedsQuery) => { GetFeeds(this.database)(query) }
+  updateFeed = (command:UpdateFeedCommand) => { UpdateFeed(this.database)(command) }
+  deleteFeed = (command:DeleteFeedCommand) => { DeleteFeed(this.database)(command) }
+ }
+ 
