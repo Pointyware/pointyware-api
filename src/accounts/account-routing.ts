@@ -37,17 +37,17 @@ export function accountRouting(
         CreateAccount(accountDatabase)
       ))
   app
-  .route('/account/:userId')
-    .get(adapter(
-      GetAccountCommandMapper,
-      GetAccount(accountDatabase)
-    ))
-    .put(adapter(
-      UpdateAccountCommandMapper,
-      UpdateAccount(accountDatabase)
-    ))
-    .delete(adapter(
-      DeleteAccountCommandMapper,
-      DeleteAccount(accountDatabase)
-    ))
+    .route('/account/:userId')
+      .get(adapter(
+        GetAccountCommandMapper,
+        GetAccount(accountDatabase)
+      ))
+      .put(adapter(
+        UpdateAccountCommandMapper,
+        UpdateAccount(accountDatabase)
+      ))
+      .delete(adapter(
+        DeleteAccountCommandMapper,
+        DeleteAccount(accountDatabase)
+      ))
 }
