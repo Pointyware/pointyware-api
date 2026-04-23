@@ -25,13 +25,6 @@ export interface DeleteFeedCommand {
 
 export type FeedCommandQuery = CreateFeedCommand | GetFeedQuery | UpdateFeedCommand | DeleteFeedCommand
 
-export class FeedInteractor {
-  database: FeedDatabase
-  constructor(database: FeedDatabase) {
-    this.database = database
-  }
-}
-
 export function CreateFeed(database: FeedDatabase): (command: CreateFeedCommand) => Promise<Feed> {
   return (command) => database.createFeed(command.title)
 }
@@ -49,4 +42,30 @@ export function UpdateFeed(database: FeedDatabase): (command: UpdateFeedCommand)
 
 export function DeleteFeed(database: FeedDatabase): (command: DeleteFeedCommand) => Promise<void> {
   return (command) => database.deleteFeed(command.feedId)
+}
+
+/**
+ * Defines the Feed entry points to the Service Layer
+ */
+export class FeedInteractor {
+  database: FeedDatabase
+  constructor(database: FeedDatabase) {
+    this.database = database
+  }
+
+  createFeed(command: CreateFeedCommand) {
+    return this.database.createFeed(command.title)
+  }
+  getFeed(query: GetFeedQuery) {
+    return this.database.readFeed(query.feedId)
+  }
+  getFeeds(query: GetFeedsQuery) {
+    return this.database.readFeeds()
+  }
+  updateFeed(command: UpdateFeedCommand) {
+    return this.database.updateFeed(command.feedId, command.title)
+  }
+  deleteFeed(command: DeleteFeedCommand) {
+    return this.database.deleteFeed(command.feedId)
+  }
 }
