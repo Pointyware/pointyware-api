@@ -1,5 +1,5 @@
 import type { UUID } from "crypto"
-import type { FeedDatabase } from "../data/social-db.js"
+import type { FeedDatabase } from "../data/social-databases.js"
 import type { Feed } from "../entities/feed.js"
 
 export interface CreateFeedCommand {

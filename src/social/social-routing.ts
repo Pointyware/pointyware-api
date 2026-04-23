@@ -3,7 +3,8 @@ import { Router, type Application } from 'express'
 import { adapter } from '../common/adapter.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
 import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './domain/comment-interactors.js'
-import type { CommentDatabase, FeedDatabase, ReactionDatabase, SocialDatabase } from './data/social-db.js'
+import type { SqliteSocialDatabase } from './data/sqlite-social-database.js'
+import type { CommentDatabase, FeedDatabase, ReactionDatabase } from "./data/social-databases.js"
 import { DeleteReaction, SetReaction } from './domain/reaction-interactors.js'
 import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction-mappers.js'
 import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed-mappers.js'
@@ -19,7 +20,7 @@ import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './domain/
  * Isn't that 
  * @param app 
  */
-export function socialRouting(app: Application, database: SocialDatabase) {
+export function socialRouting(app: Application, database: SqliteSocialDatabase) {
   const feedsRouter = feedsRouting(database, database)
   const commentsRouter = commentsRoouting(database)
   const reactionsRouter = reactionsRouting(database)
@@ -64,7 +65,7 @@ export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   return router
 }
 
-export function commentsRoouting(database: SocialDatabase) {
+export function commentsRoouting(database: SqliteSocialDatabase) {
   const router = Router()
   const comments = router.route('/feeds/feed-:feedId/comments')
   comments

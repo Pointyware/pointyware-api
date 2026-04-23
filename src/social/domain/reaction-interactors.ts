@@ -1,6 +1,6 @@
 import type { UUID } from "crypto"
 import type { Reaction } from "../entities/reaction.js"
-import type { ReactionDatabase, SocialDatabase } from "../data/social-db.js"
+import type { ReactionDatabase } from "../data/social-databases.js"
 
 
 export interface SetReactionCommand {

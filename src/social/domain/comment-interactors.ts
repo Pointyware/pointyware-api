@@ -1,5 +1,6 @@
 import type { UUID } from "crypto"
-import type { CommentDatabase, SocialDatabase } from "../data/social-db.js"
+import type { SqliteSocialDatabase } from "../data/sqlite-social-database.js"
+import type { CommentDatabase } from "../data/social-databases.js"
 import type { Comment } from "../entities/comment.js"
 import type { UserQuery } from "../../accounts/domain/account-interactors.js"
 
@@ -31,37 +32,37 @@ export function CreateComment(database: CommentDatabase): (command:CreateComment
     return database.createComment(command.content, command.feedId, command.parentId)
   }
 }
-export function GetComment(database: SocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
+export function GetComment(database: SqliteSocialDatabase): (query:CommentQuery)=>Promise<Comment[]> {
   return (query:CommentQuery)=> {
     return database.readComments(query.commentId)
   }
 }
-export function GetFeedComments(database: SocialDatabase): (query:CommentsQuery)=>Promise<Comment[]> {
+export function GetFeedComments(database: SqliteSocialDatabase): (query:CommentsQuery)=>Promise<Comment[]> {
   return (query:CommentsQuery)=> {
     return database.readComments(query.feedId)
   }
 }
-export function GetUserComments(database: SocialDatabase): (query:UserQuery)=>Promise<Comment[]> {
+export function GetUserComments(database: SqliteSocialDatabase): (query:UserQuery)=>Promise<Comment[]> {
   return (query:UserQuery)=> {
     return database.readComments(query.userId)
   }
 }
 
-export function UpdateComment(database: SocialDatabase) {
+export function UpdateComment(database: SqliteSocialDatabase) {
   return (command:UpdateCommentCommand)=> {
     return database.updateComment(command.id, command.content)
   }
 }
 
-export function DeleteComment(database: SocialDatabase) {
+export function DeleteComment(database: SqliteSocialDatabase) {
   return (command:DeleteCommentCommand)=> {
     return database.deleteComment(command.id)
   }
 }
 
 export class CommentInteractor {
-  database: SocialDatabase
-  constructor(database: SocialDatabase) {
+  database: SqliteSocialDatabase
+  constructor(database: SqliteSocialDatabase) {
     this.database = database
   }
   create(command: CreateCommentCommand): Promise<Comment> {
