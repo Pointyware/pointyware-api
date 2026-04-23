@@ -1,12 +1,12 @@
 
 import { Router, type Application } from 'express'
 import { adapter } from '../common/adapter.js'
-import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comments.js'
+import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
 import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './domain/comment-interactors.js'
 import type { CommentDatabase, FeedDatabase, ReactionDatabase, SocialDatabase } from './data/social-db.js'
 import { DeleteReaction, SetReaction } from './domain/reaction-interactors.js'
-import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction.js'
-import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed.js'
+import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction-mappers.js'
+import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed-mappers.js'
 import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './domain/feed-interactor.js'
 
 /**
