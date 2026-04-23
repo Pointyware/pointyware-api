@@ -26,7 +26,7 @@ export default defineConfig(
       // turn on for production
       // "no-console": "error
 
-      "@stylistic/indent": ['error', 2, {'memberExpression': 1}]
+      "@stylistic/indent": ['error', 2]
     }
   }
 )
