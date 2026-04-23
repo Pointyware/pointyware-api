@@ -71,7 +71,7 @@ classDiagram
     }
   }
   DatabaseImpl <|-- Database
-  namespace Entities {
+  namespace Domain {
     class UserInfo {
       username:string
       image:ProfileImage
