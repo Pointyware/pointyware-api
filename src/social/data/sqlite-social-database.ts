@@ -3,7 +3,9 @@ import { randomUUID, type UUID } from "crypto"
 import { Comment } from "../domain/comment.js"
 import type { Feed } from "../domain/feed.js"
 import type { Reaction } from "../domain/reaction.js"
-import type { FeedDatabase, CommentDatabase, ReactionDatabase } from "./social-databases.js"
+import type { FeedDatabase, CommentDatabase, ReactionDatabase, ReactionBrief } from "./social-databases.js"
+import { UnimplementedError } from "@/common/service-errors.js"
+
 
 const TABLE_FEEDS = `
 CREATE TABLE feeds (

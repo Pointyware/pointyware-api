@@ -1,7 +1,8 @@
 
 import type { Request, Response } from "express";
 import { failure, success, type Result } from "./result.js";
-import { DoesNotExistError, ForbiddenError, ServiceError, UnauthorizedError } from "./errors.js";
+import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, UnauthorizedError } from "./errors.js";
+import { ServiceError } from "./service-errors.js";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
 /**
@@ -84,7 +85,11 @@ export function GenericResponseMapper(result:Result<any>): ResultPayload {
  */
 export function standardErrorMapper(error:unknown): FailurePayload {
   if (error instanceof ServiceError) {
-    if (error instanceof UnauthorizedError) {
+    return { status: 500, body: { message:"Server Error", error: error}} // default headers: {}
+  } else if (error instanceof ClientError) {
+    if (error instanceof IllegalArgumentError) {
+      return { status: 400, body: { message: "Bad Request" }}
+    } else if (error instanceof UnauthorizedError) {
       return { status: 401, body: { message:"User is Unauthorized", error:error}} // default headers: {}
     } else if (error instanceof ForbiddenError) {
       return { status: 403, body: { message:"User is Not Allowed to Access this Resource", error:error}} // default headers: {}
