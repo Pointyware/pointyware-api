@@ -2,12 +2,13 @@ import type { UUID } from "node:crypto";
 import type { Comment } from "../domain/comment.js";
 import type { Feed } from "../domain/feed.js";
 import type { Reaction } from "../domain/reaction.js";
+import type { GetFeedsQuery } from "../domain/command-queries.js";
 
 
 export interface FeedDatabase {
   createFeed(title: string): Promise<Feed>;
   readFeed(id: UUID): Promise<Feed>;
-  readFeeds(): Promise<Feed[]>;
+  readFeeds(query:GetFeedsQuery): Promise<Feed[]>;
   updateFeed(id: UUID, title: string): Promise<Feed>;
   deleteFeed(id: UUID): Promise<void>;
 }

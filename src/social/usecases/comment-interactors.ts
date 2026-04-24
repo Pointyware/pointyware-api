@@ -1,7 +1,7 @@
 import type { SqliteSocialDatabase } from "../data/sqlite-social-database.js"
 import type { CommentDatabase } from "../data/social-databases.js"
 import type { Comment } from "../domain/comment.js"
-import type { UserQuery } from "../../accounts/domain/account-interactors.js"
+import type { UserQuery } from "../../accounts/domain/command-queries.mjs"
 import type { CreateCommentCommand, CommentQuery, CommentsQuery, UpdateCommentCommand, DeleteCommentCommand } from "../domain/command-queries.js"
 
 export function CreateComment(database: CommentDatabase): (command:CreateCommentCommand) => Promise<Comment> {

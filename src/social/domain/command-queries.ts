@@ -9,7 +9,7 @@ export interface GetFeedQuery {
   feedId: UUID
 }
 export interface GetFeedsQuery {
-  // no params
+  topics?: string[]
 }
 export interface UpdateFeedCommand {
   feedId: UUID

@@ -38,7 +38,7 @@ export class FeedInteractor {
     return this.database.readFeed(query.feedId)
   }
   getFeeds(query: GetFeedsQuery) {
-    return this.database.readFeeds()
+    return this.database.readFeeds(query)
   }
   updateFeed(command: UpdateFeedCommand) {
     return this.database.updateFeed(command.feedId, command.title)
