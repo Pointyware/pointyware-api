@@ -18,6 +18,19 @@ export function isServiceError(error: unknown): error is ServiceError {
   return error instanceof ServiceError
 }
 
+export class UnimplementedError extends ServiceError {
+  clss: string
+  method: string
+  constructor(clss:string,method:string) {
+    super()
+    this.clss = clss
+    this.method = method
+  }
+}
+
+export class IllegalStateError extends ServiceError {}
+export class IllegalArgumentError extends ServiceError {}
+
 /**
  * There was an attempt to access a resource which was denied for some reason.
  * 
