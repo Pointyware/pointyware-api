@@ -1,7 +1,8 @@
+import type { UserQuery } from "@/accounts/domain/command-queries.mjs"
 import type { CommentDto, CommentIdDto, FeedIdDto, UserIdDto } from "../../data/dtos.js"
 import type { Request } from 'express'
-import type { CommentQuery, CreateCommentCommand, DeleteCommentCommand, UpdateCommentCommand, CommentsQuery } from "../domain/comment-interactors.js"
-import type { UserQuery } from "../../accounts/domain/account-interactors.js"
+import type { CreateCommentCommand, CommentQuery, CommentsQuery, UpdateCommentCommand, DeleteCommentCommand } from "../domain/command-queries.js"
+
 
 /*
 TODO: include Zod
@@ -35,13 +36,15 @@ export function GetUserCommentsMapper(req:Request<UserIdDto,any,any,any>): UserQ
 
 export function UpdateCommentMapper(req:Request<CommentIdDto,any,CommentDto,any>): UpdateCommentCommand {
   return {
-    id: req.params.commentId,
+    feedId: req.params.feedId, 
+    commentId: req.params.commentId,
     content: req.body.content
   }
 }
 
 export function DeleteCommentMapper(req:Request<CommentIdDto,any,any,any>): DeleteCommentCommand {
   return {
-    id: req.params.commentId
+    feedId: req.params.feedId,
+    commentId: req.params.commentId
   }
 }
