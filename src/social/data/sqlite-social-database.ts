@@ -21,7 +21,56 @@ CREATE TABLE comments (
   content TEXT NOT NULL
 );`
 
-export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase { // TODO: implement feed, comment, reaction databases; only use narrow interfaces in controller so we can separate them behind the scenes
+const NULL_UUID: UUID = '00000000-000000-0000-0000-00000000'
+
+export class SqliteFeedDao implements FeedDatabase {
+  createFeed(title: string): Promise<Feed> {
+    throw new Error("Method not implemented.")
+  }
+  readFeed(feedId: UUID): Promise<Feed> {
+    throw new Error("Method not implemented.")
+  }
+  readFeeds(): Promise<Feed[]> {
+    throw new Error("Method not implemented.")
+  }
+  updateFeed(feedId: UUID, title: string): Promise<Feed> {
+    throw new Error("Method not implemented.")
+  }
+  deleteFeed(feedId: UUID): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+}
+export class SqliteCommentDao implements CommentDatabase {
+  createComment(content: string, feedId: UUID, parentId?: UUID): Promise<Comment> {
+    throw new Error("Method not implemented.")
+  }
+  readComment(feedId: UUID, id: UUID): Promise<Comment> {
+    throw new Error("Method not implemented.")
+  }
+  readComments(feedId: UUID): Promise<Comment[]> {
+    throw new Error("Method not implemented.")
+  }
+  updateComment(feedId: UUID, id: UUID, content: string): Promise<Comment> {
+    throw new Error("Method not implemented.")
+  }
+  deleteComment(feedId: UUID, id: UUID): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+
+}
+export class SqliteReactionDao implements ReactionDatabase {
+  upsertReaction(commentId: UUID, userId: UUID, reaction: Reaction): Promise<ReactionBrief> {
+    throw new Error("Method not implemented.")
+  }
+  readReactions(commentId: UUID): Promise<ReactionBrief> {
+    throw new Error("Method not implemented.")
+  }
+  deleteReaction(commentId: UUID, userId: UUID): Promise<void> {
+    throw new Error("Method not implemented.")
+  }
+}
+
+export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase {
   private db: DatabaseSync
   constructor(path:string=':memory:') {
     this.db = new DatabaseSync(path)
@@ -43,26 +92,18 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
       comments: []
     }
   }
-  async readFeed(id:UUID): Promise<Feed> {
-
-    return {
-      id: id,
-      title: 'Example Feed',
-      comments: []
-    }
+  async readFeed(feedId:UUID): Promise<Feed> {
+    throw new UnimplementedError('sqlite-social-database', 'newFeed')
   }
   async readFeeds(): Promise<Feed[]> {
-    return []
+    throw new UnimplementedError('sqlite-social-database', 'readFeeds')
   }
-  async updateFeed(id:UUID,title:string): Promise<Feed> {
-    return {
-      id: id,
-      title: title,
-      comments: []
-    }
+  async updateFeed(feedId:UUID,title:string): Promise<Feed> {
+    throw new UnimplementedError('sqlite-social-database', 'updateFeed')
   }
-  async deleteFeed(id:UUID): Promise<void> {
+  async deleteFeed(feedId:UUID): Promise<void> {
     // TODO: delete feed from database
+    throw new UnimplementedError('sqlite-social-database', 'readFeed')
   }
 
   async createComment(feedId:UUID,content:string,parentId?:UUID): Promise<Comment> {
@@ -70,7 +111,8 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
     return new Promise<Comment>((resolve,reject)=>{
       try {
         const uuid = randomUUID() // generate a UUID for the comment
-        const safeId = parentId || '' // TODO: replace with null UUID?
+        const userId = randomUUID() // TODO: 
+        const safeId = parentId || NULL_UUID  // TODO: replace with null UUID?
         const statement = this.db.prepare(`
           INSERT INTO comments (feed_id,parent_id,content,uuid)
           VALUES ($feedId,$parentId,$content,$uuid)
@@ -81,7 +123,7 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
             content: content,
             uuid: uuid
           }) 
-          resolve(new Comment(content,uuid))
+          resolve(new Comment(uuid,content,userId,safeId))
         }
         catch (err) {
           reject(err)
@@ -92,7 +134,7 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
 
   async readComment(feedId:UUID,id:UUID): Promise<Comment> {
     // TODO: read comment from database by id and return
-    return new Comment('Example Comment', id)
+    throw new UnimplementedError('sqlite-social-database', 'readComment')
   }
   
   async readComments(feedId:UUID): Promise<Comment[]> {
@@ -109,30 +151,30 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
     
     return commentList
   }
-  updateComment(feedId:UUID,id:UUID,content:string): Promise<Comment>
-  async updateComment(id: UUID, content: string): Promise<Comment> {
+
+  async updateComment(feedId: UUID, id:UUID, content: string): Promise<Comment> {
     // TODO: attempt to overwrite comment
-
-    return new Comment(content, id)
+    throw new UnimplementedError('sqlite-social-database', 'updateComment')
   }
-  deleteComment(id:UUID): Promise<void>
+  deleteComment(feedId:UUID,commentId:UUID): Promise<void>
   async deleteComment(id: UUID) {
-    // TODO: remove comment from database
+    throw new UnimplementedError('sqlite-social-database', 'deleteComment')
   }
 
 
-  async upsertReaction(commentId: UUID, reaction: Reaction): Promise<Reaction[]> {
+  async upsertReaction(feedId:UUID,commentId: UUID, reaction: Reaction): Promise<Reaction[]> {
     // TODO: upsert reaction for comment, then return all reactions for comment
-    return []
+    throw new UnimplementedError('sqlite-social-database', 'upsertReaction')
   }
   
-  async readReactions(commentId: UUID): Promise<Reaction[]> {
+  async readReactions(feedId:UUID,commentId: UUID): Promise<Reaction[]> {
     // TODO: 
-    return []
+    throw new UnimplementedError('sqlite-social-database', 'readReaction')
   }
 
 
-  async deleteReaction(commentId: UUID) {
+  async deleteReaction(feedId:UUID,commentId: UUID) {
     // TODO: delete reaction for comment
+    throw new UnimplementedError('sqlite-social-database', 'deleteReaction')
   }
 }
