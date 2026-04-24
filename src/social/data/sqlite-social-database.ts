@@ -162,12 +162,12 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
   }
 
 
-  async upsertReaction(feedId:UUID,commentId: UUID, reaction: Reaction): Promise<Reaction[]> {
+  async upsertReaction(feedId:UUID,commentId: UUID, userId: UUID, reaction: Reaction): Promise<ReactionBrief> {
     // TODO: upsert reaction for comment, then return all reactions for comment
     throw new UnimplementedError('sqlite-social-database', 'upsertReaction')
   }
   
-  async readReactions(feedId:UUID,commentId: UUID): Promise<Reaction[]> {
+  async readReactions(feedId:UUID,commentId: UUID): Promise<ReactionBrief> {
     // TODO: 
     throw new UnimplementedError('sqlite-social-database', 'readReaction')
   }

@@ -19,9 +19,9 @@ export interface CommentDatabase {
   deleteComment(feedId: UUID, id: UUID): Promise<void>;
 }
 export interface ReactionDatabase {
-  upsertReaction(commentId: UUID, userId: UUID, reaction: Reaction): Promise<ReactionBrief>;
-  readReactions(commentId: UUID): Promise<ReactionBrief>;
-  deleteReaction(commentId: UUID, userId: UUID): Promise<void>;
+  upsertReaction(feedId: UUID, commentId: UUID, userId: UUID, reaction: Reaction): Promise<ReactionBrief>;
+  readReactions(feedId: UUID, commentId: UUID): Promise<ReactionBrief>;
+  deleteReaction(feedId: UUID, commentId: UUID, userId: UUID): Promise<void>;
 }
 
 export interface ReactionBrief {
