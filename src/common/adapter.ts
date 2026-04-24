@@ -2,7 +2,7 @@
 import type { Request, Response } from "express";
 import { failure, success, type Result } from "./result.js";
 import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, UnauthorizedError } from "./errors.js";
-import { ServiceError } from "./service-errors.js";
+import { ServiceError, UnimplementedError } from "./service-errors.js";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
 /**
@@ -58,7 +58,7 @@ export interface SuccessPayload extends Payload {
  * status codes.
  */
 export interface FailurePayload extends Payload {
-  status?:400|401|402|403|404|500
+  status?:400|401|402|403|404|500|501
 }
 /**
  * A union type discriminated on the `status` field.
@@ -85,6 +85,9 @@ export function GenericResponseMapper(result:Result<any>): ResultPayload {
  */
 export function standardErrorMapper(error:unknown): FailurePayload {
   if (error instanceof ServiceError) {
+    if (error instanceof UnimplementedError) {
+      return { status: 501, body: { message:"Not Implemented", error: error }}
+    }
     return { status: 500, body: { message:"Server Error", error: error}} // default headers: {}
   } else if (error instanceof ClientError) {
     if (error instanceof IllegalArgumentError) {

@@ -1,7 +1,7 @@
 
 import express from 'express'
 import type { AccountDatabase } from './data/account-database.js'
-import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './domain/account-interactors.js'
+import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './usecases/account-interactors.js'
 import { CreateAccountCommandMapper, DeleteAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper, UpdateAccountCommandMapper } from './adapters/account.js'
 import { adapter } from '../common/adapter.js'
 

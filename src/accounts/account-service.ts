@@ -3,7 +3,7 @@ import { AccountDatabase } from '../accounts/data/account-database.js'
 import { Service } from '../common/service.js'
 import { ErrorHandler } from '../common/network.js'
 import type { Pool } from 'pg'
-import { AccountInteractor } from './domain/account-interactors.js'
+import { AccountInteractor } from './usecases/account-interactors.js'
 
 /**
  * The Account Service manages all user account information, which includes
