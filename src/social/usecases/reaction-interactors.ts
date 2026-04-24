@@ -1,5 +1,5 @@
 import type { UUID } from "crypto"
-import type { Reaction } from "../entities/reaction.js"
+import type { Reaction } from "./reaction.js"
 import type { ReactionDatabase } from "../data/social-databases.js"
 
 

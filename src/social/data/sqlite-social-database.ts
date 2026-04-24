@@ -1,8 +1,8 @@
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite"
 import { randomUUID, type UUID } from "crypto"
-import { Comment } from "../entities/comment.js"
-import type { Feed } from "../entities/feed.js"
-import type { Reaction } from "../entities/reaction.js"
+import { Comment } from "../domain/comment.js"
+import type { Feed } from "../domain/feed.js"
+import type { Reaction } from "../domain/reaction.js"
 import type { FeedDatabase, CommentDatabase, ReactionDatabase } from "./social-databases.js"
 
 const TABLE_FEEDS = `

@@ -1,8 +1,8 @@
 import { randomUUID, type UUID } from "crypto"
-import type { Reaction } from "../entities/reaction.js"
+import type { Reaction } from "../domain/reaction.js"
 import type { CommentDatabase, FeedDatabase, ReactionBrief, ReactionDatabase } from "./social-databases.js"
-import type { Comment } from "../entities/comment.js"
-import type { Feed } from "../entities/feed.js"
+import type { Comment } from "../domain/comment.js"
+import type { Feed } from "../domain/feed.js"
 import { DoesNotExistError } from "@/common/errors.js"
 
 export class TestFeedDatabase implements FeedDatabase {

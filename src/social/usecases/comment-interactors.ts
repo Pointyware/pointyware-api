@@ -1,7 +1,7 @@
 import type { UUID } from "crypto"
 import type { SqliteSocialDatabase } from "../data/sqlite-social-database.js"
 import type { CommentDatabase } from "../data/social-databases.js"
-import type { Comment } from "../entities/comment.js"
+import type { Comment } from "./comment.js"
 import type { UserQuery } from "../../accounts/domain/account-interactors.js"
 
 export interface CreateCommentCommand {

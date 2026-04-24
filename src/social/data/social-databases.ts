@@ -1,7 +1,7 @@
 import type { UUID } from "node:crypto";
-import type { Comment } from "../entities/comment.js";
-import type { Feed } from "../entities/feed.js";
-import type { Reaction } from "../entities/reaction.js";
+import type { Comment } from "../domain/comment.js";
+import type { Feed } from "../domain/feed.js";
+import type { Reaction } from "../domain/reaction.js";
 
 
 export interface FeedDatabase {

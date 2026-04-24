@@ -2,9 +2,9 @@ import { PgFacade } from "@/data/pg-facade.js";
 import type { Pool } from "pg";
 import type { FeedDatabase, CommentDatabase, ReactionDatabase, ReactionBrief } from "./social-databases.js";
 import type { UUID } from "crypto";
-import type { Feed } from "../entities/feed.js";
-import type { Comment } from "../entities/comment.js";
-import type { Reaction } from "../entities/reaction.js";
+import type { Feed } from "../domain/feed.js";
+import type { Comment } from "../domain/comment.js";
+import type { Reaction } from "../domain/reaction.js";
 
 
 export class PostgresqlSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase {

@@ -1,5 +1,5 @@
 import type { UUID } from "crypto";
-import type { Reaction } from "../social/entities/reaction.js";
+import type { Reaction } from "../social/domain/reaction.js";
 
 /**
  * Identifies a single id for a single user.
