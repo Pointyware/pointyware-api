@@ -1,52 +1,8 @@
 import type { UUID } from "crypto";
-import { Account, type ProfileImage } from "../entities/account.js";
+import { Account } from "../domain/account.js";
 import type { AccountDatabase } from "../data/account-database.js";
-import { Token } from "../entities/token.js";
-
-export interface UserQuery {
-  userId:UUID
-}
-export interface GetAccountCommand { // FIXME: reconcile with UserQuery
-  accountId:UUID
-}
-export interface DeleteAccountCommand {
-  accountId:UUID
-}
-
-export type UserId = UUID
-export interface UserHandle {
-  userId:UserId
-}
-/**
- * Publicly accessible information about a user.
- */
-interface UserInfo {
-  username:string
-  image:ProfileImage
-}
-interface ContactInfo {
-  email?:string
-  phoneNumber?:string
-}
-
-export interface NewUser {
-  username:string
-  email?:string
-  phoneNumber?:string
-}
-export type EditUser = NewUser & UserHandle
-
-export interface CreateAccountCommand { //FIXME: reconcile with NewUser
-  username:string
-  password:string
-}
-export interface LoginCommand {
-  username:string
-  password:string
-}
-export interface LogoutCommand {
-  tokenId:UUID
-}
+import { Token } from "../domain/token.js";
+import type { CreateAccountCommand, GetAccountCommand, EditUser, DeleteAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs";
 
 export function CreateAccount(database:AccountDatabase): (command:CreateAccountCommand)=>Promise<Account> {
   return async function(command:CreateAccountCommand): Promise<Account> {
