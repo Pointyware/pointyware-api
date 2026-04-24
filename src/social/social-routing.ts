@@ -2,13 +2,13 @@
 import { Router, type Application } from 'express'
 import { adapter } from '../common/adapter.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
-import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './domain/comment-interactors.js'
+import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
 import type { SqliteSocialDatabase } from './data/sqlite-social-database.js'
 import type { CommentDatabase, FeedDatabase, ReactionDatabase } from "./data/social-databases.js"
-import { DeleteReaction, SetReaction } from './domain/reaction-interactors.js'
+import { DeleteReaction, SetReaction } from './usecases/reaction-interactors.js'
 import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction-mappers.js'
 import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed-mappers.js'
-import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './domain/feed-interactor.js'
+import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './usecases/feed-interactor.js'
 
 /**
  * What is the single responsibility of a router?

@@ -1,6 +1,7 @@
-import type { UUID } from "crypto"
+
 import type { FeedDatabase } from "../data/social-databases.js"
-import type { Feed } from "./feed.js"
+import type { Feed } from "../domain/feed.js"
+import type { CreateFeedCommand, GetFeedQuery, GetFeedsQuery, UpdateFeedCommand, DeleteFeedCommand } from "../domain/command-queries.js"
 
 export function CreateFeed(database: FeedDatabase): (command: CreateFeedCommand) => Promise<Feed> {
   return (command) => database.createFeed(command.title)
