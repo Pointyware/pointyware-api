@@ -2,29 +2,6 @@ import type { UUID } from "crypto"
 import type { FeedDatabase } from "../data/social-databases.js"
 import type { Feed } from "./feed.js"
 
-export interface CreateFeedCommand {
-  authorId: UUID
-  title: string
-}
-
-export interface GetFeedQuery {
-  feedId: UUID
-}
-export interface GetFeedsQuery {
-  // no params
-}
-
-export interface UpdateFeedCommand {
-  feedId: UUID
-  title: string
-}
-
-export interface DeleteFeedCommand {
-  feedId: UUID
-}
-
-export type FeedCommandQuery = CreateFeedCommand | GetFeedQuery | UpdateFeedCommand | DeleteFeedCommand
-
 export function CreateFeed(database: FeedDatabase): (command: CreateFeedCommand) => Promise<Feed> {
   return (command) => database.createFeed(command.title)
 }
