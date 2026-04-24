@@ -57,5 +57,5 @@ export class DelegateFeedInteractor {
   getFeeds = (query:GetFeedsQuery) => { GetFeeds(this.database)(query) }
   updateFeed = (command:UpdateFeedCommand) => { UpdateFeed(this.database)(command) }
   deleteFeed = (command:DeleteFeedCommand) => { DeleteFeed(this.database)(command) }
- }
+}
  

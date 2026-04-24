@@ -72,7 +72,7 @@ export class SqliteReactionDao implements ReactionDatabase {
 
 export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase {
   private db: DatabaseSync
-  constructor(path:string=':memory:') {
+  constructor(path=':memory:') {
     this.db = new DatabaseSync(path)
   }
 
@@ -117,18 +117,18 @@ export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, Reac
           INSERT INTO comments (feed_id,parent_id,content,uuid)
           VALUES ($feedId,$parentId,$content,$uuid)
           `)
-          statement.run({
-            feedId: feedId,
-            parentId: safeId,
-            content: content,
-            uuid: uuid
-          }) 
-          resolve(new Comment(uuid,content,userId,safeId))
-        }
-        catch (err) {
-          reject(err)
-        }
+        statement.run({
+          feedId: feedId,
+          parentId: safeId,
+          content: content,
+          uuid: uuid
+        }) 
+        resolve(new Comment(uuid,content,userId,safeId))
       }
+      catch (err) {
+        reject(err)
+      }
+    }
     )
   }
 

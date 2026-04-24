@@ -31,12 +31,8 @@ export interface ReactionBrief {
 export interface ReactionDetail {
   reactions: Map<Reaction, ReactionUserList>
 }
-export interface ReactionUserMap {
-  [commentId: string]: ReactionUserList
-}
-export interface ReactionUserList {
-  [reaction: string]: UserList  
-}
+export type ReactionUserMap = Record<string, ReactionUserList>;
+export type ReactionUserList = Record<string, UserList>;
 
 export interface UserList {
   users: UUID[]

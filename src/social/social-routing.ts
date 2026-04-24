@@ -93,7 +93,7 @@ export function commentsRoouting(database: SqliteSocialDatabase) {
       DeleteCommentMapper, 
       DeleteComment(database)
     ))
-    return router
+  return router
 }
 
 export function reactionsRouting(database: ReactionDatabase) {

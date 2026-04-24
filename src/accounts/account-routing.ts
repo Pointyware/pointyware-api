@@ -32,22 +32,22 @@ export function accountRouting(
 
   app
     .route('/account')
-      .post(adapter(
-        CreateAccountCommandMapper,
-        CreateAccount(accountDatabase)
-      ))
+    .post(adapter(
+      CreateAccountCommandMapper,
+      CreateAccount(accountDatabase)
+    ))
   app
     .route('/account/:userId')
-      .get(adapter(
-        GetAccountCommandMapper,
-        GetAccount(accountDatabase)
-      ))
-      .put(adapter(
-        UpdateAccountCommandMapper,
-        UpdateAccount(accountDatabase)
-      ))
-      .delete(adapter(
-        DeleteAccountCommandMapper,
-        DeleteAccount(accountDatabase)
-      ))
+    .get(adapter(
+      GetAccountCommandMapper,
+      GetAccount(accountDatabase)
+    ))
+    .put(adapter(
+      UpdateAccountCommandMapper,
+      UpdateAccount(accountDatabase)
+    ))
+    .delete(adapter(
+      DeleteAccountCommandMapper,
+      DeleteAccount(accountDatabase)
+    ))
 }

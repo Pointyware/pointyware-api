@@ -25,9 +25,9 @@ export class AccountDatabase implements AccountDb {
   /**
    * The Postgres database connection.
   */
- private pool:pg.Pool
- constructor(pool:pg.Pool) {
-   this.pool = pool
+  private pool:pg.Pool
+  constructor(pool:pg.Pool) {
+    this.pool = pool
   }
   
   async createAccount(username:string,password:string): Promise<Account> {
