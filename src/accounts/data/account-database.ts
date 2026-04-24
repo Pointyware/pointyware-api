@@ -2,8 +2,8 @@
 import pg from "pg"
 import { PgFacade } from "@/data/pg-facade.js"
 import type { UUID } from "crypto"
-import { Account } from "../entities/account.js"
-import { Token } from "../entities/token.js"
+import { Account } from "../domain/account.js"
+import { Token } from "../domain/token.js"
 
 export interface AccountDb {
   createAccount(username:string,password:string): Promise<Account>

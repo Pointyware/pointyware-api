@@ -1,7 +1,7 @@
 
 import { type Request } from "express"
 import type { AccountAuthDto, UserIdDto } from "../../data/dtos.js"
-import type { CreateAccountCommand, DeleteAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/account-interactors.js"
+import type { CreateAccountCommand, DeleteAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs"
 
 
 export function CreateAccountCommandMapper(
