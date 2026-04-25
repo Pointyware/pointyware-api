@@ -8,7 +8,9 @@ import type { Request, Response } from "express"
  * @param res The response object to send 
  * @param next The chain callback to pass control to the next callback
  */
-export function ErrorHandler(error:unknown,req:Request,res:Response,next:()=>void) {
+export function ErrorHandler(error:unknown,req:Request,res:Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  next:()=>void) {
   // Report error for debugging and log aggregation, but do not disclose details to users for security
   console.error('Uncaught Error: ', error)
   res.status(500).send({message:'Internal Server Error - Cannot Disclose Details'})
