@@ -54,15 +54,15 @@ export class Role {
   }
 }
 
-const AdminRole = new Role('Admin', [
+export const AdminRole = new Role('Admin', [
   { resource: 'ALL', action: 'CRUD' }
 ])
 
-const AuditorRole = new Role('Auditor', [
+export const AuditorRole = new Role('Auditor', [
   { resource: 'ALL', action: Action.Read }
 ])
 
-const UserRole = new Role('User', [
+export const UserRole = new Role('User', [
   { resource: Resource.Account, action: new Set([Action.Read]) },
   { resource: Resource.Profile, action: new Set([Action.Read]) },
   { resource: Resource.Feed, action: new Set([Action.Create, Action.Read]) },
