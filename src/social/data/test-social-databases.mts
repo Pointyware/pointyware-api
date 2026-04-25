@@ -106,7 +106,7 @@ export class TestSocialDatabase implements FeedDatabase, CommentDatabase, Reacti
   async readReactions(feedId: UUID, commentId: UUID): Promise<ReactionBrief> {
     const reactionMap = this.reactions.get(commentId) || new Map()
     const summaryMap = new Map<Reaction, number>()
-    reactionMap.forEach((value,key)=> {
+    reactionMap.forEach((value)=> {
       const count = summaryMap.get(value) || 0
       summaryMap.set(value, count + 1)
     })
