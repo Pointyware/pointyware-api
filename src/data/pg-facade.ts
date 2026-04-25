@@ -5,9 +5,9 @@ import pg from "pg";
 /**
  * Provides a simplified, minimal interface for interacting with 
  */
-export class PgFacade {
+export const PgFacade = {
 
-  static getPool(
+  getPool(
     app:string,
     username:string,password:string,
     hostName:string,port:number,
