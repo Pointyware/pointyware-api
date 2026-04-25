@@ -51,7 +51,7 @@ export const UnimplementedAdapter = async (
 export interface Payload {
   status?:number
   headers?:Map<string,string>
-  body:any
+  body:object
 }
 /**
  * Constrains the `Payload.status` field to only supported HTTP success 
@@ -77,7 +77,7 @@ export type ResultPayload = SuccessPayload | FailurePayload
  * @param result The Result corresponding to the above Model type.
  * @returns A ResultPayload
  */
-export function GenericResponseMapper(result:Result<any>): ResultPayload {
+export function GenericResponseMapper(result:Result<object>): ResultPayload {
   if (result.success) {
     return { body: result.data } // default status: 200 headers: {}
   } else {
