@@ -28,6 +28,10 @@ export interface FeedIdDto {
 export interface FeedDto {
   title:string
 }
+export interface FeedQueryParams {
+  topics: string[]
+}
+
 /**
  * Identifies a comment by its id
  */
@@ -44,4 +48,9 @@ export interface CommentDto {
 
 export interface ReactionDto {
   reaction: Reaction
+}
+export interface ReactionIdDto {
+  feedId:UUID
+  commentId:UUID
+  userId:UUID
 }

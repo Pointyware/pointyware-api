@@ -10,31 +10,32 @@ TODO: include Zod
   2. use validated data to map to service models
   3. bind service response to http response with appropriate status codes
 */
-export function CreateCommentMapper(req:Request<CommentIdDto,any,CommentDto,any>): CreateCommentCommand {
+export function CreateCommentMapper(req:Request<CommentIdDto,unknown,CommentDto>): CreateCommentCommand {
   return {
     feedId: req.params.feedId,
     parentId: req.params.commentId,
     content: req.body.content
   }
 }
-export function GetCommentMapper(req:Request<CommentIdDto,any,any,any>): CommentQuery {
+export function GetCommentMapper(req:Request<CommentIdDto>): CommentQuery {
   return {
+    feedId: req.params.feedId,
     commentId: req.params.commentId
   }
 }
-export function GetFeedCommentsMapper(req:Request<FeedIdDto,any,any,any>): CommentsQuery {
+export function GetFeedCommentsMapper(req:Request<FeedIdDto>): CommentsQuery {
   return {
     feedId: req.params.feedId
   }
 }
 
-export function GetUserCommentsMapper(req:Request<UserIdDto,any,any,any>): UserQuery {
+export function GetUserCommentsMapper(req:Request<UserIdDto>): UserQuery {
   return {
     userId: req.params.userId
   }
 }
 
-export function UpdateCommentMapper(req:Request<CommentIdDto,any,CommentDto,any>): UpdateCommentCommand {
+export function UpdateCommentMapper(req:Request<CommentIdDto,unknown,CommentDto>): UpdateCommentCommand {
   return {
     feedId: req.params.feedId, 
     commentId: req.params.commentId,
@@ -42,7 +43,7 @@ export function UpdateCommentMapper(req:Request<CommentIdDto,any,CommentDto,any>
   }
 }
 
-export function DeleteCommentMapper(req:Request<CommentIdDto,any,any,any>): DeleteCommentCommand {
+export function DeleteCommentMapper(req:Request<CommentIdDto>): DeleteCommentCommand {
   return {
     feedId: req.params.feedId,
     commentId: req.params.commentId
