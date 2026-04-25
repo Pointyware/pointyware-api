@@ -15,3 +15,21 @@ export class Comment {
     this.parentId = parentId
   }
 }
+
+export interface CommentsSummary {
+  count: number
+}
+
+export interface CommentCore {
+  commentId: UUID
+  postedDate: Date
+}
+
+export interface CommentPreview extends CommentCore {
+  preview:string
+}
+
+export interface CommentDetail extends CommentCore {
+  text:string
+  children:CommentsSummary
+}
