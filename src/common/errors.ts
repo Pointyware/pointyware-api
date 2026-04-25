@@ -8,9 +8,6 @@
  * different feed.
  */
 export class ClientError extends Error {
-  constructor() {
-    super()
-  }
 }
 /**
  * Determines whether the given error is of the ClientError hierarchy or not.
@@ -39,7 +36,6 @@ export class ResourceAccessError extends ClientError {
  * HTTP Status 401
 */
 export class UnauthorizedError extends ResourceAccessError {
-  constructor(resource:string) {super(resource)}
 }
 /**
  * The user is known but does not have access to the resource.
@@ -47,7 +43,6 @@ export class UnauthorizedError extends ResourceAccessError {
  * HTTP Status 402
 */
 export class ForbiddenError extends ResourceAccessError{
-  constructor(resource:string) {super(resource)}
 }
 /**
  * The requested resource does not exist 
@@ -56,7 +51,6 @@ export class ForbiddenError extends ResourceAccessError{
  * HTTP Status 404
  */
 export class DoesNotExistError extends ResourceAccessError {
-  constructor(resource:string) {super(resource)}
 }
 
 /**
@@ -64,15 +58,9 @@ export class DoesNotExistError extends ResourceAccessError {
  * current state, instead of permissions.
  */
 export class IllegalStateError extends ClientError {
-  constructor() {
-    super()
-  }
 }
 /**
  * Indicates the endpoint and method were given unexpected arguments.
  */
 export class IllegalArgumentError extends ClientError {
-  constructor() {
-    super()
-  }
 }
