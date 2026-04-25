@@ -2,7 +2,6 @@
 import { socialRouting } from '../social/social-routing.js'
 import { Service } from '../common/service.js'
 import { SqliteSocialDatabase } from './data/sqlite-social-database.js'
-import type { Request, Response } from 'express'
 import { ErrorHandler } from '../common/network.js'
 
 /**
