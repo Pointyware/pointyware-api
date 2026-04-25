@@ -19,11 +19,11 @@ export interface UserHandle {
 /**
  * Publicly accessible information about a user.
  */
-interface UserInfo {
+export interface UserInfo {
   username:string
   image:ProfileImage
 }
-interface ContactInfo {
+export interface ContactInfo {
   email?:string
   phoneNumber?:string
 }
