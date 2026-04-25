@@ -35,6 +35,13 @@ export function adapter<Params, ResBody, ReqBody, ReqQuery, CQ, Model>(
   }
 }
 
+export const UnimplementedAdapter = async (
+  req: Request,
+  res: Response
+) => {
+  res.status(501).send({message:"Endpoint Not Implemented"})
+}
+
 /**
  * Describes the contents of an HTTP response.
  * status and headers are optional and default to 200 with no additional headers.
