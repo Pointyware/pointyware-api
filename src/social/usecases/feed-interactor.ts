@@ -11,7 +11,7 @@ export function GetFeed(database: FeedDatabase): (query: GetFeedQuery) => Promis
   return (query) => database.readFeed(query.feedId)
 }
 export function GetFeeds(database: FeedDatabase): (query: GetFeedsQuery) => Promise<Feed[]> {
-  return (query) => database.readFeeds()
+  return (query) => database.readFeeds(query)
 }
 
 export function UpdateFeed(database: FeedDatabase): (command: UpdateFeedCommand) => Promise<Feed> {
