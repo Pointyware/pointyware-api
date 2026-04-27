@@ -1,3 +1,4 @@
+import type { UUID } from "crypto"
 import { URL } from "node:url"
 
 /**
@@ -13,6 +14,11 @@ export class Account {
     this.email = email
     this.phoneNumber = phoneNumber
   }
+}
+
+export interface AccountAuth {
+  userId: UUID
+  passHash: string
 }
 
 /**

@@ -2,12 +2,13 @@
 import pg from "pg"
 import { PgFacade } from "@/data/pg-facade.js"
 import type { UUID } from "crypto"
-import { Account } from "../domain/account.js"
+import { Account, type AccountAuth } from "../domain/account.js"
 import { Token } from "../domain/token.js"
 
 export interface AccountDb {
   createAccount(username:string,password:string): Promise<Account>
   readAccount(userId:UUID): Promise<Account>
+  findAccount(username: string): Promise<AccountAuth>
   updateAccount(id:UUID,username?:string,password?:string): Promise<Account>
   deleteAccount(id:string): Promise<void>
 
@@ -39,6 +40,9 @@ export class AccountDatabase implements AccountDb {
   async readAccount(userId:UUID): Promise<Account> {
     // TODO: read user from database and return user
     return new Account('testAccount') // TODO: default image color should be randomly generated
+  }
+  async findAccount(username: string): Promise<AccountAuth> {
+    throw new Error("Method not implemented.")
   }
   
   async updateAccount(id:UUID,name?:string): Promise<Account> {
