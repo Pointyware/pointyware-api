@@ -5,10 +5,6 @@ import type { AccountDb } from "./account-database.js";
 
 export class SqliteAccountDatabase implements AccountDb {
 
-  constructor() {
-
-  }
-
   createAccount(username: string, password: string): Promise<Account> {
     throw new Error("Method not implemented.");
   }
