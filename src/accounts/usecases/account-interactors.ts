@@ -2,10 +2,10 @@ import type { UUID } from "crypto";
 import { Account } from "../domain/account.js";
 import type { AccountDatabase } from "../data/account-database.js";
 import { Token } from "../domain/token.js";
-import type { CreateAccountCommand, GetAccountCommand, EditUser, DeleteAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs";
+import type { GetAccountCommand, EditUser, DeleteAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs";
 
-export function CreateAccount(database:AccountDatabase): (command:CreateAccountCommand)=>Promise<Account> {
-  return async function(command:CreateAccountCommand): Promise<Account> {
+export function CreateAccount(database:AccountDatabase): (command:LoginCommand)=>Promise<Account> {
+  return async function(command:LoginCommand): Promise<Account> {
     return database.createAccount(command.username, command.password)
   }
 }
@@ -28,10 +28,21 @@ export function DeleteAccount(database:AccountDatabase): (command:DeleteAccountC
   }
 }
 
-export function Login(database:AccountDatabase): (command:LoginCommand)=>Promise<Account> {
-  return async function(command:LoginCommand): Promise<Account> {
+export function Login(database:AccountDatabase): (command:LoginCommand)=>Promise<Token> {
+  return async function(command:LoginCommand): Promise<Token> {
     // TODO: Implement login logic
-    return database.readAccount('') // TODO: read account by username, not id
+    const acct = await database.findAccount(command.username)
+    const hash = acct.passHash
+    // TODO: check hash
+    // TODO: create session or deny
+    if (hash) {
+      // TODO: get device info from headers
+      database.createSession(acct.userId,'device|session-info')
+      const twoDaysInSeconds = 48 * 3600
+      return new Token('', new Date(Date.now() + twoDaysInSeconds))
+    } else {
+      throw AuthenticationError(command.username)
+    }
   }
 }
 
@@ -48,7 +59,7 @@ export class AccountInteractor {
     this.database = database
   }
 
-  createAccount(command: CreateAccountCommand): Promise<Account> {
+  createAccount(command: LoginCommand): Promise<Account> {
     // 
     return this.database.createAccount(command.username, command.password)
   }
