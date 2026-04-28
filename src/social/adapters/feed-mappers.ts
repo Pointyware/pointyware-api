@@ -5,7 +5,6 @@ import type { CreateFeedCommand, GetFeedQuery, GetFeedsQuery, UpdateFeedCommand,
 
 export function CreateFeedMapper(req:Request<unknown,unknown,FeedDto>): CreateFeedCommand {
   return {
-    authorId: req.user?.id, // assuming authentication middleware has set req.user
     title: req.body.title
   }
 }

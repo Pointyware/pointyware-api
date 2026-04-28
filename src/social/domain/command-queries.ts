@@ -2,7 +2,6 @@ import type { UUID } from "crypto"
 import type { Reaction } from "./reaction.js"
 
 export interface CreateFeedCommand {
-  authorId: UUID
   title: string
 }
 export interface GetFeedQuery {
