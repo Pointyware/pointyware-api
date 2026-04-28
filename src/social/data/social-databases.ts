@@ -6,7 +6,7 @@ import type { GetFeedsQuery } from "../domain/command-queries.js";
 
 
 export interface FeedDatabase {
-  createFeed(title: string): Promise<Feed>;
+  createFeed(authorId: UUID, title: string): Promise<Feed>;
   readFeed(id: UUID): Promise<Feed>;
   readFeeds(query:GetFeedsQuery): Promise<Feed[]>;
   updateFeed(id: UUID, title: string): Promise<Feed>;
