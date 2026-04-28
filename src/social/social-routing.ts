@@ -1,6 +1,6 @@
 
 import { Router, type Application } from 'express'
-import { adapter } from '../common/adapter.js'
+import { adapter, UnimplementedAdapter } from '../common/adapter.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
 import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
 import type { SqliteSocialDatabase } from './data/sqlite-social-database.js'
@@ -110,4 +110,54 @@ export function reactionsRouting(database: ReactionDatabase) {
     ))
 
   return router
+}
+
+
+/*
+GLOBAL SCOPE
+
+tasks: Map[Id, Task]
+tasks: Collection/Set[Task]
+/tasks
+
+type Task {
+  someProperty: ReturnType
+  /tasks/task-id/someProperty
+
+  someFunction(arg1,arg2) {
+  }
+  /tasks/task-id/someFunction?arg1=val1&arg2=val2
+}
+
+
+*/
+
+export function taskRouting(app:Application) {
+  const taskRouter = Router()
+
+  // - /tasks
+  // - /tasks/taskId
+  // 
+  taskRouter
+    .route('/tasks')
+    .post(UnimplementedAdapter)
+    .get(UnimplementedAdapter)
+    .put(UnimplementedAdapter)
+    .delete(UnimplementedAdapter)
+  taskRouter
+    .route('/tasks/')
+  taskRouter
+    .route('/tasks/')
+  
+
+  return taskRouter
+}
+export function recipesRouting(app:Application) {
+  const recipesRouter = Router()
+
+  // - /recipes
+  // - /recipes
+  // 
+
+  return recipesRouter
 }
