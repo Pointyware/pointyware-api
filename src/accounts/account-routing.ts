@@ -3,7 +3,7 @@ import express from 'express'
 import type { AccountDatabase } from './data/account-database.js'
 import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './usecases/account-interactors.js'
 import { CreateAccountCommandMapper, DeleteAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper, UpdateAccountCommandMapper } from './adapters/account.js'
-import { adapter } from '../common/adapter.js'
+import { adapter, UnimplementedAdapter } from '../common/adapter.js'
 
 /**
  * TODO: rename to Router and refactor to use express.Router() objects
@@ -26,9 +26,8 @@ export function accountRouting(
 
   // TODO: add OAuth endpoints/flow
 
-  app.post('/auth/oauth', async (req, res) => {
-
-  })
+  app
+    .post('/auth/oauth', UnimplementedAdapter)
 
   app
     .route('/account')
