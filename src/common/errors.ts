@@ -54,6 +54,16 @@ export class DoesNotExistError extends ResourceAccessError {
 }
 
 /**
+ * The requested resource was requested too many times in too short a span
+ * of time.
+ * 
+ * HTTP Status 429
+ */
+export class TooManyRequestsError extends ClientError {
+  
+}
+
+/**
  * Indicates the client attempted to do something that is prevented by 
  * current state, instead of permissions.
  */
