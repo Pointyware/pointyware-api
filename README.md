@@ -28,13 +28,27 @@ echo "Setup complete! Node version: $(node --version)"
 
 ## Architecture
 
-The network interface acts as our ultimate input and output with the outside world, shaping the client, or user, interface. Instead of mouse and keyboard events driving changes, the events we respond to are incoming requests from the network, the model we update is typically a database, and instead of a screen to output the results, we return the results through network responses directed back at the original sender. Despite the vastly different environment, the same architectural layering principles familiar in front-end devlopment provide the same maintenance benefits in back-end development. The general process is as follows:
+The network interface acts as our ultimate input and output with the outside world, shaping the client, or user, interface. Instead of mouse and keyboard events driving changes, the events we respond to are incoming requests from the network, the model we update is typically held in database, and instead of a screen to output the results, we return the results through network responses directed back at the original sender. Despite the vastly different environment, the same architectural layering principles familiar in front-end development provide the same maintenance benefits in back-end development. The general process is as follows:
 
-1. A request comes in to the server network interface
-2. The router (or routers) take care of marshalling the data in the request into the appropriate business models and sending them to the appropriate controller. Business models need not be entirely separate entites – well defined function interfaces work just fine for this connection.
-3. The controller acts on the business models passed to it to update the server's model (usually a database)
-4. The controller returns a response – at least a confirmation of success, but in RESTful APIs, it will usually return the updated state.
-5. The router, having received the response from the controller, marshalls the entity data into a new network response and sends it off.
+1. A request comes in to the application and is routed to the appropriate adapter according to the Router Logic.
+2. The Adapters first main component, the RequestMapper, produces a command or query object that represents some operation within the domain.
+3. The Adapter's second main component, the Interpreter, translates the command or query object into an actual domain operation with the help of Interactors
+  1. Use Cases implement the business logic or program policies
+  2. These policies describe how to manipulate the domain model, usually through repositories, databases, or other data layer abstractions
+    1. The data abstraction receives one or more mutation commands or getter queries and fullfils them as it can.
+    2. The data layer returns either confirmation that the process completed successfully.
+  3. Use Cases return a Result describing the outcome of the operation.
+5. The Adapter's final main component, the ResponseMapper, takes the Result from the Interpreter and maps it to a response object.
+6. The original routing layer finally receives the response object and binds it to the network response object to send the response to the user.
+  - to manipulate the domain model, usually through repositories, databases, or other data layer abstractions
+
+Components:
+1. Router(s): Path, Method
+2. Adapters: RequestMapper, Interpreter, ResponseMapper
+3. Interactors: UseCases, Repository/Database/Auth Interfaces
+4. Data: Repositories and Databases
+
+Currently, the Frameworks and Drivers layer is bleeding into the adapter layer, making the adapters directly dependent on a specific framework, Express. It would be preferable if the Adapters did not depend on Express and instead defined their own signatures to accept inputs from other frameworks.
 
 ```mermaid
 
@@ -154,6 +168,32 @@ Creates endpoints:
   - DELETE /comment-UUID delete specific comment
   - 
 
+```mermaid
+classDiagram
+  class Task {
+
+  }
+  class TaskList {
+    
+  }
+
+  class Group {
+
+  }
+
+  class Ingredient {
+
+  }
+  class Recipe {
+
+  }
+  class GroceryList {
+
+  }
+  class Pantry {
+
+  }
+```
 
 TODO: include Zod
 1. validate request data in adapter layer and return 400 with schema validation errors if invalid
