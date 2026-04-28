@@ -1,26 +1,49 @@
 
 import type { Request, Response } from "express";
 import { failure, success, type Result } from "./result.js";
-import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, UnauthorizedError } from "./errors.js";
+import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, TooManyRequestsError, UnauthorizedError } from "./errors.js";
 import { ServiceError, UnimplementedError } from "./service-errors.js";
+import type { UUID } from "crypto";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
+
+/**
+ * Adapts between the express framework and the application domain.
+ * 
+ * TODO: rename to some type of request handler, create proper Adapter that receives messages from request handler
+ */
+export type Adapter<PathParams, QueryParams, ReqBody, ResBody> = (
+  req: Request<PathParams, ResBody, ReqBody, QueryParams>,
+  res: Response<ResBody>
+)=>Promise<void>
+
+/**
+ * 
+ */
+interface AnonymousUser {
+  ipRegion: string
+}
+
+export type RequestModelMapper<CQ> = (req:Request)=>CQ
+export type Interpreter<CQ, Model> = (commandQuery:CQ,user:AnonymousUser)=>Promise<Result<Model>>
+export type ModelResponseMapper<Model, ResBody> = (result:Result<Model>)=>ResBody
+
 /**
  * @param requestModelMapper Maps an incoming Request to some domain Command or Query object
  * @param interpreter Executes a given Command or Query on the appropriate Controllers and captures the resulting Model.
  * @param modelResponseMapper Maps the resulting Model into a ResultPayload.
  */
-export function adapter<Params, ResBody, ReqBody, ReqQuery, CQ, Model>(
+export function adapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | FailureBody>(
   requestModelMapper: (request:Request<Params, ResBody, ReqBody, ReqQuery>)=>CQ, 
   interpreter: (commandQuery:CQ)=>Promise<Model>,
-  modelResponseMapper: (result:Result<Model>)=>ResultPayload=GenericResponseMapper
+  modelResponseMapper: (result:Result<Model>)=>ResultPayload<Model>=GenericResponseMapper
 ) {
   return async (
     req: Request<Params, ResBody, ReqBody, ReqQuery>, 
     res: Response<ResBody>
   ) => {
     const model = requestModelMapper(req)
-    let response: ResultPayload
+    let response: ResultPayload<Model>
     try {
       const result = await interpreter(model)
       response = modelResponseMapper(success(result))
@@ -35,6 +58,7 @@ export function adapter<Params, ResBody, ReqBody, ReqQuery, CQ, Model>(
   }
 }
 
+// TODO: move to top of file
 export const UnimplementedAdapter = async (
   req: Request,
   res: Response
@@ -48,36 +72,45 @@ export const UnimplementedAdapter = async (
  * body can be any value, which will be passed to `Response.send` to
  * be serialized.
  */
-export interface Payload {
+export interface Payload<T> {
   status?:number
   headers?:Map<string,string>
-  body:object
+  body:T
 }
 /**
  * Constrains the `Payload.status` field to only supported HTTP success 
  * status codes.
  */
-export interface SuccessPayload extends Payload {
+export interface SuccessPayload<T> extends Payload<T> {
   status?:200|201
 }
 /**
  * Constrains the `Payload.status` field to only supported HTTP failure 
  * status codes.
  */
-export interface FailurePayload extends Payload {
-  status?:400|401|402|403|404|500|501
+export interface FailurePayload extends Payload<FailureBody> {
+  status?:400|401|402|403|404|422|429|500|501
 }
+/**
+ * The body property of FailurePayload-s should always have a message
+ * and an error attached if it was caused by a thrown exception.
+ */
+export interface FailureBody {
+  message:string
+  cause?:unknown
+}
+
 /**
  * A union type discriminated on the `status` field.
  */
-export type ResultPayload = SuccessPayload | FailurePayload
+export type ResultPayload<T> = SuccessPayload<T> | FailurePayload
 
 /**
  * 
  * @param result The Result corresponding to the above Model type.
  * @returns A ResultPayload
  */
-export function GenericResponseMapper(result:Result<object>): ResultPayload {
+export function GenericResponseMapper<T>(result:Result<T>): ResultPayload<T> {
   if (result.success) {
     return { body: result.data } // default status: 200 headers: {}
   } else {
@@ -90,22 +123,36 @@ export function GenericResponseMapper(result:Result<object>): ResultPayload {
  * @param error The error to type-narrow for refined failure reporting.
  * @returns A FailurePayload with status code determined by error type.
  */
-export function standardErrorMapper(error:unknown): FailurePayload {
+export function standardErrorMapper<T>(error:unknown): FailurePayload {
   if (error instanceof ServiceError) {
     if (error instanceof UnimplementedError) {
-      return { status: 501, body: { message:"Not Implemented", error: error }}
+      return { status: 501, body: { message:"Not Implemented", cause: error }}
     }
-    return { status: 500, body: { message:"Server Error", error: error}} // default headers: {}
+    return { status: 500, body: { message:"Server Error", cause: error}} // default headers: {}
   } else if (error instanceof ClientError) {
     if (error instanceof IllegalArgumentError) {
       return { status: 400, body: { message: "Bad Request" }}
     } else if (error instanceof UnauthorizedError) {
-      return { status: 401, body: { message:"User is Unauthorized", error:error}} // default headers: {}
+      return { status: 401, body: { message:"User is Unauthorized", cause:error}} // default headers: {}
     } else if (error instanceof ForbiddenError) {
-      return { status: 403, body: { message:"User is Not Allowed to Access this Resource", error:error}} // default headers: {}
+      return { status: 403, body: { message:"User is Not Allowed to Access this Resource", cause:error}} // default headers: {}
     } else if (error instanceof DoesNotExistError) {
-      return { status: 404, body: { message:"Resource does not exist.", error:error} }
+      return { status: 404, body: { message:"Resource does not exist.", cause:error} }
+    } else if (error instanceof TooManyRequestsError) {
+      return { status: 429, body: { message:"Too Many Requests" }, 
+        headers: new Map([[
+            'Retry-After', '500' // time in milliseconds
+        ]])
+      }
     }
   }
-  return { status: 500, body: { message:"Unhandled Server Error", error: error}} // default headers: {}
+  return { status: 500, body: { message:"Unhandled Server Error", cause: error}} // default headers: {}
 }
+
+/**
+ * 
+ */
+interface AuthenticatedUser {
+  userId: UUID
+}
+export type AuthenticatedInterpeter<CQ, Model> = (commandQuery:CQ, user:AuthenticatedUser)=>Promise<Model>
