@@ -1,23 +1,26 @@
 
 import { type Request } from "express"
 import type { AccountAuthDto, UserIdDto } from "../../data/dtos.js"
-import type { CreateAccountCommand, DeleteAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs"
+import type { DeleteAccountCommand, EditUser, GetAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs"
 
 
 export function CreateAccountCommandMapper(
-  req: Request<any, any, AccountAuthDto, any>
-): CreateAccountCommand {
-  return req.params
+  req: Request<unknown, unknown, AccountAuthDto>
+): LoginCommand {
+  return {
+    username: req.body.username,
+    password: req.body.password
+  }
 }
 export function GetAccountCommandMapper(
-  req: Request<UserIdDto, any, any, any> 
+  req: Request<UserIdDto> 
 ): GetAccountCommand {
   return {
     accountId: req.params.userId
   }
 }
 export function UpdateAccountCommandMapper(
-  req: Request<UserIdDto, any, AccountAuthDto, any>
+  req: Request<UserIdDto, unknown, AccountAuthDto>
 ): EditUser {
   return {
     userId: req.params.userId,
@@ -26,7 +29,7 @@ export function UpdateAccountCommandMapper(
   }
 }
 export function DeleteAccountCommandMapper(
-  req: Request<UserIdDto, any, any, any>
+  req: Request<UserIdDto>
 ): DeleteAccountCommand {
   return {
     accountId: req.params.userId
@@ -34,9 +37,13 @@ export function DeleteAccountCommandMapper(
 }
 
 export function LoginCommandMapper(
-  req: Request<any, any, AccountAuthDto, any>
+  req: Request<unknown, unknown, AccountAuthDto>
 ): LoginCommand {
-  return req.body
+  return {
+    username: req.body.username,
+    password: req.body.password,
+    deviceInfo: 'placeholder-device-info' // TODO: pass along from headers
+  }
 }
 
 export function LogoutCommandMapper(
