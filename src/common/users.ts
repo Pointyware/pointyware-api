@@ -18,3 +18,8 @@ export interface AnonymousUser {
 export interface AuthenticatedUser {
   accountId: UUID
 }
+
+/**
+ * Some kind of user.
+ */
+export type User = AnonymousUser | AuthenticatedUser
