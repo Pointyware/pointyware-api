@@ -1,6 +1,6 @@
 
 import { Router, type Application } from 'express'
-import { adapter, UnimplementedAdapter } from '../common/adapter.js'
+import { adapter, authenticatedAdapter, UnimplementedAdapter } from '../common/adapter.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
 import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
 import type { SqliteSocialDatabase } from './data/sqlite-social-database.js'
@@ -34,30 +34,30 @@ export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   const router = Router()
   const feedsRoute = router.route('/feeds')
   feedsRoute
-    .post(adapter(
+    .post(authenticatedAdapter(
       CreateFeedMapper,
       CreateFeed(feedDb)
     ))
-    .get(adapter(
+    .get(authenticatedAdapter(
       GetFeedsMapper,
       GetFeeds(feedDb)
     ))
 
   const feedIdRoute = router.route('/feeds/feed-:feedId')
   feedIdRoute
-    .post(adapter(
+    .post(authenticatedAdapter(
       CreateCommentMapper,
       CreateComment(commentDb)
     ))
-    .get(adapter(
+    .get(authenticatedAdapter(
       GetFeedMapper,
       GetFeed(feedDb)
     ))
-    .put(adapter(
+    .put(authenticatedAdapter(
       UpdateFeedMapper,
       UpdateFeed(feedDb)
     ))
-    .delete(adapter(
+    .delete(authenticatedAdapter(
       DeleteFeedMapper,
       DeleteFeed(feedDb)
     ))

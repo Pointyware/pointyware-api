@@ -9,18 +9,18 @@ export function CreateFeed(database: FeedDatabase): (command: CreateFeedCommand,
 }
 
 export function GetFeed(database: FeedDatabase): (query: GetFeedQuery, user: AuthenticatedUser) => Promise<Feed> {
-  return (query) => database.readFeed(query.feedId)
+  return (query,user) => database.readFeed(query.feedId)
 }
 export function GetFeeds(database: FeedDatabase): (query: GetFeedsQuery, user: AuthenticatedUser) => Promise<Feed[]> {
-  return (query) => database.readFeeds(query)
+  return (query,user) => database.readFeeds(query)
 }
 
 export function UpdateFeed(database: FeedDatabase): (command: UpdateFeedCommand, user: AuthenticatedUser) => Promise<Feed> {
-  return (command) => database.updateFeed(command.feedId, command.title)
+  return (command,user) => database.updateFeed(command.feedId, command.title)
 }
 
 export function DeleteFeed(database: FeedDatabase): (command: DeleteFeedCommand, user: AuthenticatedUser) => Promise<void> {
-  return (command) => database.deleteFeed(command.feedId)
+  return (command,user) => database.deleteFeed(command.feedId)
 }
 
 /**
