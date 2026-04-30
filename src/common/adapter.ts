@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import { failure, success, type Result } from "./result.js";
 import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, TooManyRequestsError, UnauthorizedError } from "./errors.js";
 import { ServiceError, UnimplementedError } from "./service-errors.js";
-import type { UUID } from "crypto";
+import type { AnonymousUser, AuthenticatedUser } from "./users.js";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
 
@@ -17,15 +17,9 @@ export type Adapter<PathParams, QueryParams, ReqBody, ResBody> = (
   res: Response<ResBody>
 )=>Promise<void>
 
-/**
- * 
- */
-interface AnonymousUser {
-  ipRegion: string
-}
-
 export type RequestModelMapper<CQ> = (req:Request)=>CQ
 export type Interpreter<CQ, Model> = (commandQuery:CQ,user:AnonymousUser)=>Promise<Result<Model>>
+export type AuthenticatedInterpreter<CQ, Model> = (commandQuery:CQ,user:AuthenticatedUser) =>Promise<Result<Model>>
 export type ModelResponseMapper<Model, ResBody> = (result:Result<Model>)=>ResBody
 
 /**
@@ -35,17 +29,18 @@ export type ModelResponseMapper<Model, ResBody> = (result:Result<Model>)=>ResBod
  */
 export function adapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | FailureBody>(
   requestModelMapper: (request:Request<Params, ResBody, ReqBody, ReqQuery>)=>CQ, 
-  interpreter: (commandQuery:CQ)=>Promise<Model>,
+  interpreter: (commandQuery:CQ,user:AnonymousUser)=>Promise<Model>,
   modelResponseMapper: (result:Result<Model>)=>ResultPayload<Model>=GenericResponseMapper
 ) {
   return async (
     req: Request<Params, ResBody, ReqBody, ReqQuery>, 
     res: Response<ResBody>
   ) => {
+    const user = getUnauthenticatedUser(req)
     const model = requestModelMapper(req)
     let response: ResultPayload<Model>
     try {
-      const result = await interpreter(model)
+      const result = await interpreter(model,user)
       response = modelResponseMapper(success(result))
       res.status(response.status ?? 200)
     } catch (error) {
@@ -55,6 +50,53 @@ export function adapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | 
     res
       .setHeaders(response.headers ?? EMPTY_STRING_MAP)
       .send(response.body)
+  }
+}
+function getUnauthenticatedUser<A,B,C,D>(request:Request<A,B,C,D>): AnonymousUser {
+  return {
+    ip: request.ip ?? 'NO IP'
+  }
+}
+
+export function authenticatedAdapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | FailureBody>(
+  requestModelMapper: (request:Request<Params, ResBody, ReqBody, ReqQuery>)=>CQ,
+  authenticatedInterpreter: (commandQuery:CQ,user:AuthenticatedUser)=>Promise<Model>,
+  modelResponseMapper: (result: Result<Model>)=>ResultPayload<Model>=GenericResponseMapper
+) {
+  return async (
+    req: Request<Params, ResBody, ReqBody, ReqQuery>, 
+    res: Response<ResBody>
+  ) => {
+    const user = getAuthenticatedUser(req)
+    const model = requestModelMapper(req)
+
+    let response: ResultPayload<Model>
+    try {
+      const result = await authenticatedInterpreter(model, user)
+      response = modelResponseMapper(success(result))
+      res.status(response.status ?? 200)
+    } catch (error) {
+      response = modelResponseMapper(failure(error))
+      res.status(response.status ?? 500)
+    }
+    res
+      .setHeaders(response.headers ?? EMPTY_STRING_MAP)
+      .send(response.body)
+  }
+}
+function getAuthenticatedUser<A,B,C,D>(request:Request<A,B,C,D>): AuthenticatedUser {
+    const authHeader = request.headers['authorization']
+  if (authHeader?.search(/^Bearer: /) == 0) {
+    const token = authHeader.substring('Bearer: '.length)
+    // TODO: get token from database with account id
+    // verify token is still valid
+    // extract permissions info
+    // pass along with account id
+    return {
+      accountId: '0-0-0-0-0'
+    }
+  } else {
+    throw new UnauthorizedError(request.path)
   }
 }
 
@@ -149,10 +191,4 @@ export function standardErrorMapper<T>(error:unknown): FailurePayload {
   return { status: 500, body: { message:"Unhandled Server Error", cause: error}} // default headers: {}
 }
 
-/**
- * 
- */
-interface AuthenticatedUser {
-  userId: UUID
-}
 export type AuthenticatedInterpeter<CQ, Model> = (commandQuery:CQ, user:AuthenticatedUser)=>Promise<Model>
