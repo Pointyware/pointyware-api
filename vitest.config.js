@@ -1,3 +1,4 @@
+import path from 'path'
 import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -5,6 +6,10 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       './dist/*'
-    ]
+    ],
+    environment: 'node',
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
   },
 })
