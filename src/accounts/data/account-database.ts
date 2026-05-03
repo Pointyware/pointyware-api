@@ -5,15 +5,15 @@ import type { UUID } from "crypto"
 import { Account, type AccountAuth } from "../domain/account.js"
 import { Token } from "../domain/token.js"
 
+/**
+ * 
+ */
 export interface AccountDb {
   createAccount(username:string,password:string): Promise<Account>
   readAccount(userId:UUID): Promise<Account>
   findAccount(username: string): Promise<AccountAuth>
   updateAccount(id:UUID,username?:string,password?:string): Promise<Account>
   deleteAccount(id:string): Promise<void>
-
-  createSession(userId:UUID, deviceInfo:string): Promise<Token>
-  deleteSession(key:string): Promise<void>
 }
 
 /**
@@ -78,6 +78,9 @@ export class TestAccountDatabase implements AccountDb {
     throw new Error("Method not implemented.")
   }
   readAccount(userId: UUID): Promise<Account> {
+    throw new Error("Method not implemented.")
+  }
+  findAccount(username: string): Promise<AccountAuth> {
     throw new Error("Method not implemented.")
   }
   updateAccount(id: UUID, username?: string, password?: string): Promise<Account> {
