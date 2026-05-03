@@ -1,7 +1,7 @@
 
 import { socialRouting } from '../social/social-routing.js'
 import { Service } from '../common/service.js'
-import { SqliteSocialDatabase } from './data/sqlite-social-database.js'
+import { SqliteSocialDatabase, type SocialDatabase } from './data/sqlite-social-database.js'
 import { ErrorHandler } from '../common/network.js'
 
 /**
@@ -9,10 +9,10 @@ import { ErrorHandler } from '../common/network.js'
  */
 export class SocialService extends Service {
 
-  db:SqliteSocialDatabase
-  constructor() {
+  db:SocialDatabase
+  constructor(database:SocialDatabase) {
     super()
-    this.db = new SqliteSocialDatabase()
+    this.db = database
   }
 
   override async start(port:number) {
@@ -34,7 +34,8 @@ export class SocialService extends Service {
 }
 
 export default async function startSocialService(port:number): Promise<SocialService> {
-  const service = new SocialService()
+  const prodDb = new SqliteSocialDatabase()
+  const service = new SocialService(prodDb)
   await service.start(port)
   return service
 }

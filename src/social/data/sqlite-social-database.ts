@@ -70,7 +70,9 @@ export class SqliteReactionDao implements ReactionDatabase {
   }
 }
 
-export class SqliteSocialDatabase implements FeedDatabase, CommentDatabase, ReactionDatabase {
+export interface SocialDatabase extends FeedDatabase, CommentDatabase, ReactionDatabase { }
+
+export class SqliteSocialDatabase implements SocialDatabase {
   private db: DatabaseSync
   constructor(path=':memory:') {
     this.db = new DatabaseSync(path)
