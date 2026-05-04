@@ -25,15 +25,15 @@ export class AccountService extends Service {
     this.pool = pool
     this.database = new AccountDatabase(pool)
     this.interactor = new AccountInteractor(this.database)
+
+    // Setup Auth Routing
+    accountRouting(this.app,this.database)
+  
+    // Catch All Unhandled Errors
+    this.app.use(ErrorHandler)
   }
 
   override async start(port:number) {
-    // Setup Auth Routing
-    accountRouting(this.app,this.database)
-
-    // Catch All Unhandled Errors
-    this.app.use(ErrorHandler)
-
     // Start Service App
     this.app.listen(port, (error:unknown)=> {
       if (error) {

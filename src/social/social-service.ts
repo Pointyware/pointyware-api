@@ -13,15 +13,15 @@ export class SocialService extends Service {
   constructor(database:SocialDatabase) {
     super()
     this.db = database
+
+    // Setup API Routing
+    socialRouting(this.app, this.db)
+  
+    // Catch All Unhandled Errors
+    this.app.use(ErrorHandler)
   }
 
   override async start(port:number) {
-    // Setup API Routing
-    socialRouting(this.app, this.db)
-
-    // Catch All Unhandled Errors
-    this.app.use(ErrorHandler)
-
     // Start Service App
     this.app.listen(port, (error:unknown)=> {
       if (error) {
