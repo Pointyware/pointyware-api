@@ -36,10 +36,10 @@ export function adapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | 
     req: Request<Params, ResBody, ReqBody, ReqQuery>, 
     res: Response<ResBody>
   ) => {
-    const user = getUnauthenticatedUser(req)
-    const model = requestModelMapper(req)
     let response: ResultPayload<Model>
     try {
+      const user = getUnauthenticatedUser(req)
+      const model = requestModelMapper(req)
       const result = await interpreter(model,user)
       response = modelResponseMapper(success(result))
       res.status(response.status ?? 200)
@@ -67,11 +67,10 @@ export function authenticatedAdapter<Params, Model, ReqBody, ReqQuery, CQ, ResBo
     req: Request<Params, ResBody, ReqBody, ReqQuery>, 
     res: Response<ResBody>
   ) => {
-    const user = getAuthenticatedUser(req)
-    const model = requestModelMapper(req)
-
     let response: ResultPayload<Model>
     try {
+      const user = getAuthenticatedUser(req)
+      const model = requestModelMapper(req)
       const result = await authenticatedInterpreter(model, user)
       response = modelResponseMapper(success(result))
       res.status(response.status ?? 200)
