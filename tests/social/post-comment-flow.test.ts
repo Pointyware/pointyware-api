@@ -14,7 +14,7 @@ beforeAll(()=>{
 })
 
 describe('Post Comment Flow', async ()=>{
-  describe('Authorized Cases', async() => {
+  describe('Token is Valid', async() => {
     beforeEach(()=>{
       // TODO: setup session token
     })
@@ -52,7 +52,7 @@ describe('Post Comment Flow', async ()=>{
       expect(response.body.content).toBe('This is a new comment!')
     })
   })
-  describe('User Token', async ()=>{
+  describe('Token is Expired', async ()=>{
     beforeEach(()=>{
       // TODO: setup expired token
     })
