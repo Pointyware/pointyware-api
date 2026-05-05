@@ -1,6 +1,6 @@
 
 import { Router, type Application } from 'express'
-import { adapter, authenticatedAdapter, UnimplementedAdapter } from '../common/adapter.js'
+import { adapter, authenticatedAdapter, UnimplementedAdapter } from '../common/adapters.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
 import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
 import type { SocialDatabase } from './data/sqlite-social-database.js'

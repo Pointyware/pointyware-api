@@ -3,7 +3,7 @@ import express from 'express'
 import type { AccountDatabase } from './data/account-database.js'
 import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './usecases/account-interactors.js'
 import { CreateAccountCommandMapper, DeleteAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper, UpdateAccountCommandMapper } from './adapters/account.js'
-import { adapter, UnimplementedAdapter } from '../common/adapter.js'
+import { adapter, UnimplementedAdapter } from '../common/adapters.js'
 
 /**
  * TODO: rename to Router and refactor to use express.Router() objects
