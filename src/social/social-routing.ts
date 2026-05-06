@@ -9,8 +9,6 @@ import { DeleteReaction, SetReaction } from './usecases/reaction-interactors.js'
 import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction-mappers.js'
 import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed-mappers.js'
 import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './usecases/feed-interactor.js'
-import type { AnonymousUser, AuthenticatedUser } from '@/common/users.js'
-import { success } from '@/common/result.js'
 
 /**
  * What is the single responsibility of a router?
@@ -22,17 +20,17 @@ import { success } from '@/common/result.js'
  * Isn't that 
  * @param app 
  */
-export function socialRouting(app: Application, database: SocialDatabase) {
-  const feedsRouter = feedsRouting(database, database)
-  const commentsRouter = commentsRoouting(database)
-  const reactionsRouter = reactionsRouting(database)
+export function socialRouting(app: Application, interactor: CommentInteractor, database: SocialDatabase) {
+  const feedsRouter = getFeedsRouter(database, database)
+  const commentsRouter = getCommentsRoouting(database, interactor)
+  const reactionsRouter = getReactionsRouting(database)
 
   app.use(feedsRouter)
   app.use(commentsRouter)
   app.use(reactionsRouter)
 }
 
-export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
+export function getFeedsRouter(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   const router = Router()
   const feedsRoute = router.route('/feeds')
   feedsRoute
@@ -67,88 +65,7 @@ export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   return router
 }
 
-function anonymousCommandHandler<Command, Model>(
-  commandMapper:(req:Request)=>Command,
-  adapter:(command:Command,user:AnonymousUser)=>Promise<Model>
-) {
-  return (req: Request, res: Response) => {
-    // TODO: insert Mapper for each param/query/body
-    
-    // pull ip/device info from request
-
-    // TODO: use GenericResponseMapper
-  }
-}
-function anonymousQueryHandler<Query, Model>(
-  queryMapper:(req:Request)=>Query,
-  adapter:(query:Query,user:AnonymousUser)=>Promise<Model>
-) {
-  return (req: Request, res: Response) => {
-    // TODO: insert Mapper for each param/query/body
-    
-    // pull ip/device info from request
-
-    // TODO: use GenericResponseMapper
-  }
-}
-function authenticatedCommandHandler<Command, Model>(
-  commandMapper:
-  adapter:(command:Command,user:AuthenticatedUser)=>Promise<Model>){
-
-}
-function authenticatedQueryHandler<Query, Model>(adapter:(query:Query,user:AuthenticatedUser)=>Promise<Model>) {
-  return (req: Request, res: Response) => {
-    // TODO: insert Mapper for each param/query/body
-    
-    // TODO: pull bearer token/user info
-    
-    // TODO: user GenericResponseMapper
-  }
-}
-
-
-function anonymousHandler<P, Q, B, CQ, Model>(
-  requestMapper:(req:Request<P, unknown, B, Q>)=>CQ,
-  adapter:(cq:CQ,user:AnonymousUser)=>Promise<Model>
-) {
-  return (req: Request<P, unknown, B, Q>, res: Response) => {
-    // TODO: insert Mapper for each param/query/body
-    const cq = requestMapper(req)
-    
-    // pull ip/device info from request
-    const user: AnonymousUser = {
-      ip: req.ip || 'NO IP'
-    }
-    // TODO: pull token or ip of user
-
-    const result = adapter(cq, user)
-    
-    const paylooad = GenericResponseMapper(success(result))
-    // TODO move from adapter function
-  }
-}
-function authenticatedHandler<P, Q, B, CQ, Model>(
-  requestMapper:(req:Request<P, unknown, B, Q>)=>CQ,
-  adapter:(cq:CQ,user:AuthenticatedUser)=>Promise<Model>
-) {
-  return (req: Request<P, unknown, B, Q>, res: Response) => {
-    // TODO: insert Mapper for each param/query/body
-    const cq = requestMapper(req)
-    
-    // TODO: pull bearer token/user info
-    const user: AuthenticatedUser = {
-      accountId: '0-0-0-0-0'
-    }
-
-    const result = adapter(cq, user)
-    
-    // TODO: user GenericResponseMapper
-    const payload = GenericResponseMapper(success(result))
-    // TODO: move from adapter function
-  }
-}
-
-export function commentsRoouting(database: SocialDatabase, commentsInteractor: CommentInteractor) {
+export function getCommentsRoouting(database: SocialDatabase, commentsInteractor: CommentInteractor) {
   const router = Router()
   const comments = router.route('/feeds/feed-:feedId/comments')
   comments
@@ -189,7 +106,7 @@ export function commentsRoouting(database: SocialDatabase, commentsInteractor: C
   return router
 }
 
-export function reactionsRouting(database: ReactionDatabase) {
+export function getReactionsRouting(database: ReactionDatabase) {
   const router = Router()
   const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
   reactionsRoute

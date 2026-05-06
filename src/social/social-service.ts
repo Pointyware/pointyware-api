@@ -3,19 +3,18 @@ import { socialRouting } from '../social/social-routing.js'
 import { Service } from '../common/service.js'
 import { SqliteSocialDatabase, type SocialDatabase } from './data/sqlite-social-database.js'
 import { ErrorHandler } from '../common/network.js'
+import type { CommentInteractor } from './usecases/comment-interactors.js'
 
 /**
  * The Social Service 
  */
 export class SocialService extends Service {
 
-  db:SocialDatabase
-  constructor(database:SocialDatabase) {
+  constructor(commentInteractor:CommentInteractor, database:SocialDatabase) {
     super()
-    this.db = database
 
     // Setup API Routing
-    socialRouting(this.app, this.db)
+    socialRouting(this.app, commentInteractor, database)
   
     // Catch All Unhandled Errors
     this.app.use(ErrorHandler)

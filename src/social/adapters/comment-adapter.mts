@@ -14,6 +14,33 @@ export class CommentAdapter {
     this.commentInteractor = commentInteractor
   }
 
+  /**
+   * Alternative to inclusion of Interactors in Router logic
+   * 
+   * Current Router:
+   * - Adapter
+   * - DataMapper
+   * - Interpreter -> Interactor Bridge
+   * 
+   * New Router:
+   * - DataMapper/Handlers
+   * - Adapters
+   * 
+   * const comments = router.route('/feeds/feed-:feedId/comments')
+     comments
+       .post(adapter(
+         CreateCommentMapper,
+         CreateComment(database)
+       ))
+       .get(adapter(
+         GetFeedCommentsMapper,
+         GetFeedComments(database)
+       ))
+
+   * @param params 
+   * @param body 
+   * @returns 
+   */
   async onCreate(params:CommentIdDto,body:CommentDto): Promise<ResultPayload<Comment>> {
     // TODO: invoke use case
 
@@ -21,6 +48,8 @@ export class CommentAdapter {
       feedId: params.feedId,
       parentId: params.commentId,
       content: body.content
+    }, {
+      accountId: '0-0-0-0-0'
     })
 
     // return GenericResponseMapper(result)

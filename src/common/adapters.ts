@@ -4,6 +4,7 @@ import { failure, success, type Result } from "./result.js";
 import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, TooManyRequestsError, UnauthorizedError } from "./errors.js";
 import { ServiceError, UnimplementedError } from "./service-errors.js";
 import type { AnonymousUser, AuthenticatedUser } from "./users.js";
+import { getUnauthenticatedUser, getAuthenticatedUser } from "@/social/network/handlers.mjs";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
 
@@ -52,11 +53,6 @@ export function adapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | 
       .send(response.body)
   }
 }
-function getUnauthenticatedUser<A,B,C,D>(request:Request<A,B,C,D>): AnonymousUser {
-  return {
-    ip: request.ip ?? 'NO IP'
-  }
-}
 
 export function authenticatedAdapter<Params, Model, ReqBody, ReqQuery, CQ, ResBody = Model | FailureBody>(
   requestModelMapper: (request:Request<Params, ResBody, ReqBody, ReqQuery>)=>CQ,
@@ -81,21 +77,6 @@ export function authenticatedAdapter<Params, Model, ReqBody, ReqQuery, CQ, ResBo
     res
       .setHeaders(response.headers ?? EMPTY_STRING_MAP)
       .send(response.body)
-  }
-}
-function getAuthenticatedUser<A,B,C,D>(request:Request<A,B,C,D>): AuthenticatedUser {
-    const authHeader = request.headers['authorization']
-  if (authHeader?.search(/^Bearer: /) == 0) {
-    const token = authHeader.substring('Bearer: '.length)
-    // TODO: get token from database with account id
-    // verify token is still valid
-    // extract permissions info
-    // pass along with account id
-    return {
-      accountId: '0-0-0-0-0'
-    }
-  } else {
-    throw new UnauthorizedError(request.path)
   }
 }
 
