@@ -1,14 +1,16 @@
 
-import { Router, type Application } from 'express'
-import { adapter, authenticatedAdapter, UnimplementedAdapter } from '../common/adapters.js'
+import { type Request, type Response, Router, type Application } from 'express'
+import { adapter, authenticatedAdapter, GenericResponseMapper, UnimplementedAdapter, type ResultPayload } from '../common/adapters.js'
 import { CreateCommentMapper, DeleteCommentMapper, GetCommentMapper, GetFeedCommentsMapper, UpdateCommentMapper } from './adapters/comment-mappers.js'
-import { CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
+import { CommentInteractor, CreateComment, DeleteComment, GetComment, GetFeedComments, UpdateComment } from './usecases/comment-interactors.js'
 import type { SocialDatabase } from './data/sqlite-social-database.js'
 import type { CommentDatabase, FeedDatabase, ReactionDatabase } from "./data/social-databases.js"
 import { DeleteReaction, SetReaction } from './usecases/reaction-interactors.js'
 import { DeleteReactionMapper, SetReactionMapper } from './adapters/reaction-mappers.js'
 import { CreateFeedMapper, DeleteFeedMapper, GetFeedMapper, GetFeedsMapper, UpdateFeedMapper } from './adapters/feed-mappers.js'
 import { CreateFeed, DeleteFeed, GetFeed, GetFeeds, UpdateFeed } from './usecases/feed-interactor.js'
+import type { AnonymousUser, AuthenticatedUser } from '@/common/users.js'
+import { success } from '@/common/result.js'
 
 /**
  * What is the single responsibility of a router?
@@ -65,7 +67,88 @@ export function feedsRouting(feedDb: FeedDatabase, commentDb: CommentDatabase) {
   return router
 }
 
-export function commentsRoouting(database: SocialDatabase) {
+function anonymousCommandHandler<Command, Model>(
+  commandMapper:(req:Request)=>Command,
+  adapter:(command:Command,user:AnonymousUser)=>Promise<Model>
+) {
+  return (req: Request, res: Response) => {
+    // TODO: insert Mapper for each param/query/body
+    
+    // pull ip/device info from request
+
+    // TODO: use GenericResponseMapper
+  }
+}
+function anonymousQueryHandler<Query, Model>(
+  queryMapper:(req:Request)=>Query,
+  adapter:(query:Query,user:AnonymousUser)=>Promise<Model>
+) {
+  return (req: Request, res: Response) => {
+    // TODO: insert Mapper for each param/query/body
+    
+    // pull ip/device info from request
+
+    // TODO: use GenericResponseMapper
+  }
+}
+function authenticatedCommandHandler<Command, Model>(
+  commandMapper:
+  adapter:(command:Command,user:AuthenticatedUser)=>Promise<Model>){
+
+}
+function authenticatedQueryHandler<Query, Model>(adapter:(query:Query,user:AuthenticatedUser)=>Promise<Model>) {
+  return (req: Request, res: Response) => {
+    // TODO: insert Mapper for each param/query/body
+    
+    // TODO: pull bearer token/user info
+    
+    // TODO: user GenericResponseMapper
+  }
+}
+
+
+function anonymousHandler<P, Q, B, CQ, Model>(
+  requestMapper:(req:Request<P, unknown, B, Q>)=>CQ,
+  adapter:(cq:CQ,user:AnonymousUser)=>Promise<Model>
+) {
+  return (req: Request<P, unknown, B, Q>, res: Response) => {
+    // TODO: insert Mapper for each param/query/body
+    const cq = requestMapper(req)
+    
+    // pull ip/device info from request
+    const user: AnonymousUser = {
+      ip: req.ip || 'NO IP'
+    }
+    // TODO: pull token or ip of user
+
+    const result = adapter(cq, user)
+    
+    const paylooad = GenericResponseMapper(success(result))
+    // TODO move from adapter function
+  }
+}
+function authenticatedHandler<P, Q, B, CQ, Model>(
+  requestMapper:(req:Request<P, unknown, B, Q>)=>CQ,
+  adapter:(cq:CQ,user:AuthenticatedUser)=>Promise<Model>
+) {
+  return (req: Request<P, unknown, B, Q>, res: Response) => {
+    // TODO: insert Mapper for each param/query/body
+    const cq = requestMapper(req)
+    
+    // TODO: pull bearer token/user info
+    const user: AuthenticatedUser = {
+      accountId: '0-0-0-0-0'
+    }
+
+    const result = adapter(cq, user)
+    
+    // TODO: user GenericResponseMapper
+    const payload = GenericResponseMapper(success(result))
+    // TODO: move from adapter function
+  }
+}
+
+export function commentsRoouting(database: SocialDatabase, commentsInteractor: CommentInteractor) {
   const router = Router()
   const comments = router.route('/feeds/feed-:feedId/comments')
   comments
@@ -76,6 +159,16 @@ export function commentsRoouting(database: SocialDatabase) {
     .get(adapter(
       GetFeedCommentsMapper,
       GetFeedComments(database)
+    ))
+  
+  comments
+    .post(authenticatedHandler(
+      CreateCommentMapper,
+      commentsInteractor.create
+    ))
+    .get(authenticatedHandler(
+      GetCommentMapper,
+      commentsInteractor.get
     ))
   
   const commentIdRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId')
