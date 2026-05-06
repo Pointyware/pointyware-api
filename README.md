@@ -104,6 +104,54 @@ classDiagram
 
 ```
 
+
+### Patterns
+
+**Page Adapter (Controller)[^fowler-page-controller]**
+
+Instead of using a true controller that has knowledge of the framework layer within the adapter layer, we use a clean adapter with no knowledge of outer layers.
+
+```mermaid
+classDiagram
+  class 
+```
+
+**Chain of Responsibility[^guru-chain]**
+
+
+
+**Repository[^fowler-repository]** - 
+
+
+
+**Table Data Gateway[^fowler-table-gateway]**
+
+
+
+**Data Mapper[^fowler-data-mapper]** - 
+
+
+
+**Query Object[^fowler-query-object]** - 
+
+**Handler
+
+**Service Stub[^fowler-service-stub]** - 
+
+For test stability and speed and short time-to-first-feature, I frequently use service stubs
+
+[^fowler-page-controller]: https://martinfowler.com/eaaCatalog/pageController.html
+[^fowler-service-stub]: https://martinfowler.com/eaaCatalog/serviceStub.html
+[^guru-chain]: https://refactoring.guru/design-patterns/chain-of-responsibility
+
+[^fowler-repository]: https://martinfowler.com/eaaCatalog/repository.html
+[^fowler-table-gateway]: https://martinfowler.com/eaaCatalog/tableDataGateway.html
+[^fowler-table-module]: https://martinfowler.com/eaaCatalog/tableModule.html
+
+[^fowler-data-mapper]: https://martinfowler.com/eaaCatalog/dataMapper.html
+[^fowler-query-object]: https://martinfowler.com/eaaCatalog/queryObject.html
+
+
 ### Theory
 
 Comment:
