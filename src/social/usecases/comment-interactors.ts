@@ -3,6 +3,7 @@ import type { CommentDatabase } from "../data/social-databases.js"
 import type { Comment } from "../domain/comment.js"
 import type { UserQuery } from "../../accounts/domain/command-queries.mjs"
 import type { CreateCommentCommand, CommentQuery, CommentsQuery, UpdateCommentCommand, DeleteCommentCommand } from "../domain/command-queries.js"
+import type { AnonymousUser, AuthenticatedUser } from "@/common/users.js"
 
 export function CreateComment(database: CommentDatabase): (command:CreateCommentCommand) => Promise<Comment> {
   return async (command:CreateCommentCommand)=> {
@@ -42,10 +43,10 @@ export class CommentInteractor {
   constructor(database: SocialDatabase) {
     this.database = database
   }
-  create(command: CreateCommentCommand): Promise<Comment> {
+  create(command: CreateCommentCommand, user: AuthenticatedUser): Promise<Comment> {
     return this.database.createComment(command.content, command.feedId, command.parentId)
   }
-  get(query: CommentQuery): Promise<Comment[]> {
+  get(query: CommentQuery, user: AuthenticatedUser): Promise<Comment[]> {
     return this.database.readComments(query.commentId)
   }
 }
