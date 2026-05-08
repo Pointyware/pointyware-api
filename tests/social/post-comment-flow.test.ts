@@ -9,6 +9,7 @@ function testService(): SocialService {
   return new SocialService(testDb)
 }
 
+// TODO: consider using nock to mock network responses
 beforeAll(()=>{
   console.info('beforeAll: ')
 })
