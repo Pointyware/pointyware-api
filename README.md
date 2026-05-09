@@ -247,3 +247,26 @@ TODO: include Zod
 1. validate request data in adapter layer and return 400 with schema validation errors if invalid
 2. use validated data to map to service models
 3. bind service response to http response with appropriate status codes
+
+## Testing Strategy
+
+[Unit Tests](#units-tests) are essential for all code.
+
+[Integration Tests](#integration-tests) are nice but often redundant – to avoid that, we prescribe only specific scopes of integration tests.
+
+[End-to-End Tests](#end-to-end-tests) are vital for ensuring critical paths remain functional and bug-free.
+
+**Tools**
+- vitest
+
+### Units Tests
+
+We aim for 100% coverage by unit tests; however, we understand the utility of tests to be the fast, stable, automated verification of accepted behaviors. To that end, if a branch is experimental, test coverage is not expected until the changes reach the trunk or other stable branches. Even on an experimental branch, if an API has determined some behavior, a test should be written for at least that determined behavior, while the unstable portion of the API remains uncovered.
+
+### Integration Tests
+
+
+
+### End-to-End Tests
+
+
