@@ -263,10 +263,30 @@ TODO: include Zod
 
 We aim for 100% coverage by unit tests; however, we understand the utility of tests to be the fast, stable, automated verification of accepted behaviors. To that end, if a branch is experimental, test coverage is not expected until the changes reach the trunk or other stable branches. Even on an experimental branch, if an API has determined some behavior, a test should be written for at least that determined behavior, while the unstable portion of the API remains uncovered.
 
+**Tools**
+- sinonJs: https://sinonjs.org/
+
 ### Integration Tests
 
+We find the greatest value in integration tests for parts of the system that coordinate between multiple smaller units.
 
+
+**Tools**
+- 
 
 ### End-to-End Tests
 
+End-to
 
+**Tools**
+- playwright
+
+### Non-Functional (Performance) Tests
+
+- benchmarking:
+  1. generate report
+  2. introduce change
+  3. generate new report
+  4. create diff from new and old reports
+  5. repeat 2-4
+- 
