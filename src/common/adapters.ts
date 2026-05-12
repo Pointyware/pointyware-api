@@ -1,10 +1,11 @@
 
 import type { Request, Response } from "express";
 import { failure, success, type Result } from "./result.js";
-import { ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, TooManyRequestsError, UnauthorizedError } from "./errors.js";
+import { AuthenticationError, ClientError, DoesNotExistError, ForbiddenError, IllegalArgumentError, TooManyRequestsError, UnauthorizedError } from "./errors.js";
 import { ServiceError, UnimplementedError } from "./service-errors.js";
 import type { AnonymousUser, AuthenticatedUser } from "./users.js";
 import { getUnauthenticatedUser, getAuthenticatedUser } from "@/social/network/handlers.mjs";
+import type { Token } from "@/accounts/domain/token.js";
 
 const EMPTY_STRING_MAP = new Map<string,string>()
 
@@ -104,7 +105,7 @@ export interface Payload<T> {
  * status codes.
  */
 export interface SuccessPayload<T> extends Payload<T> {
-  status?:200|201
+  status?:200|201|303
 }
 /**
  * Constrains the `Payload.status` field to only supported HTTP failure 
@@ -140,6 +141,14 @@ export function GenericResponseMapper<T>(result:Result<T>): ResultPayload<T> {
   }
 }
 
+export function AuthResponseMapper(result:Result<Token>): ResultPayload<Token> {
+  if (result.success) {
+    return { body: result.data, status: 303, headers: new Map([['Location', 'http://Taushs-Mac-Studio.local:3000/']]) }
+  } else {
+    return standardErrorMapper(result.error)
+  }
+}
+
 /**
  * 
  * @param error The error to type-narrow for refined failure reporting.
@@ -156,6 +165,8 @@ export function standardErrorMapper<T>(error:unknown): FailurePayload {
       return { status: 400, body: { message: "Bad Request" }}
     } else if (error instanceof UnauthorizedError) {
       return { status: 401, body: { message:"User is Unauthorized", cause:error}} // default headers: {}
+    } else if (error instanceof AuthenticationError) {
+      return { status: 401, body: { message:"Wrong username or password.", cause:error}}
     } else if (error instanceof ForbiddenError) {
       return { status: 403, body: { message:"User is Not Allowed to Access this Resource", cause:error}} // default headers: {}
     } else if (error instanceof DoesNotExistError) {
