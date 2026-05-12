@@ -29,7 +29,7 @@ export function anonymousHandler<P, Q, B, CQ, Model>(
   requestMapper:(req:Request<P, unknown, B, Q>)=>CQ,
   adapter:(cq:CQ,user:AnonymousUser)=>Promise<Model>
 ) {
-  return (req: Request<P, unknown, B, Q>, res: Response) => {
+  return async (req: Request<P, unknown, B, Q>, res: Response) => {
     // TODO: insert Mapper for each param/query/body
     const cq = requestMapper(req)
     
