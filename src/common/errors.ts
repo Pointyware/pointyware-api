@@ -38,6 +38,13 @@ export class ResourceAccessError extends ClientError {
 export class UnauthorizedError extends ResourceAccessError {
 }
 /**
+ * The user could not be authenticated because the username or password is wrong.
+ * 
+ * HTTP Status 401
+ */
+export class AuthenticationError extends ClientError {
+}
+/**
  * The user is known but does not have access to the resource.
  * 
  * HTTP Status 402
