@@ -1,25 +1,34 @@
-import type { UUID } from "node:crypto";
-import type { Account } from "../domain/account.js";
-import type { Token } from "../domain/token.js";
+import { randomUUID, type UUID } from "node:crypto";
+import { Account, type AccountAuth } from "../domain/account.js";
+import { Token } from "../domain/token.js";
 import { type AccountDb } from "./account-database.js";
 
 export class TestAccountDatabase implements AccountDb {
-  createAccount(username: string, password: string): Promise<Account> {
-    throw new Error("Method not implemented.");
+  async createAccount(username: string, password: string): Promise<Account> {
+    return new Account(username)
   }
-  readAccount(userId: UUID): Promise<Account> {
-    throw new Error("Method not implemented.");
+  async readAccount(userId: UUID): Promise<Account> {
+    return new Account('username')
   }
-  updateAccount(id: UUID, username?: string, password?: string): Promise<Account> {
-    throw new Error("Method not implemented.");
+  async findAccount(username: string): Promise<AccountAuth> {
+    return {
+      userId: randomUUID(),
+      passHash: 'someHash'
+    }
   }
-  deleteAccount(id: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async updateAccount(id: UUID, username?: string, password?: string): Promise<Account> {
+    return new Account('username')
   }
-  createSession(userId: UUID, deviceInfo: string): Promise<Token> {
-    throw new Error("Method not implemented.");
+  async deleteAccount(id: string): Promise<void> {
+    return
   }
-  deleteSession(key: string): Promise<void> {
-    throw new Error("Method not implemented.");
+  async createSession(userId: UUID, deviceInfo: string): Promise<Token> {
+    const twoDaysInSeconds = 48 * 3600
+    return new Token(
+      randomUUID(), new Date(Date.now() + twoDaysInSeconds)
+    )
+  }
+  async deleteSession(key: string): Promise<void> {
+    return
   }
 }

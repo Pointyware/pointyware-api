@@ -14,6 +14,9 @@ export interface AccountDb {
   findAccount(username: string): Promise<AccountAuth>
   updateAccount(id:UUID,username?:string,password?:string): Promise<Account>
   deleteAccount(id:string): Promise<void>
+
+  createSession(userId:UUID, deviceInfo:string): Promise<Token>
+  deleteSession(key:string): Promise<void>
 }
 
 /**
@@ -73,26 +76,3 @@ export async function authSqlPool(): Promise<pg.Pool> {
   return pool
 }
 
-export class TestAccountDatabase implements AccountDb {
-  createAccount(username: string, password: string): Promise<Account> {
-    throw new Error("Method not implemented.")
-  }
-  readAccount(userId: UUID): Promise<Account> {
-    throw new Error("Method not implemented.")
-  }
-  findAccount(username: string): Promise<AccountAuth> {
-    throw new Error("Method not implemented.")
-  }
-  updateAccount(id: UUID, username?: string, password?: string): Promise<Account> {
-    throw new Error("Method not implemented.")
-  }
-  deleteAccount(id: string): Promise<void> {
-    throw new Error("Method not implemented.")
-  }
-  createSession(userId: UUID, deviceInfo: string): Promise<Token> {
-    throw new Error("Method not implemented.")
-  }
-  deleteSession(key: string): Promise<void> {
-    throw new Error("Method not implemented.")
-  }
-}

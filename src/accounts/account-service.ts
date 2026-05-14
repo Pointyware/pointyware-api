@@ -1,9 +1,10 @@
 import { accountRouting } from '../accounts/account-routing.js'
-import { AccountDatabase } from '../accounts/data/account-database.js'
+import { AccountDatabase, type AccountDb } from '../accounts/data/account-database.js'
 import { Service } from '../common/service.js'
 import { ErrorHandler } from '../common/network.js'
 import type { Pool } from 'pg'
 import { AccountInteractor } from './usecases/account-interactors.js'
+import { TestAccountDatabase } from './data/test-account-database.mjs'
 
 /**
  * The Account Service manages all user account information, which includes
@@ -18,12 +19,13 @@ import { AccountInteractor } from './usecases/account-interactors.js'
  */
 export class AccountService extends Service {
   pool: Pool
-  database: AccountDatabase
+  database: AccountDb
   interactor: AccountInteractor
   constructor(pool:Pool) {
     super()
     this.pool = pool
-    this.database = new AccountDatabase(pool)
+    // this.database = new AccountDatabase(pool)
+    this.database = new TestAccountDatabase()
     this.interactor = new AccountInteractor(this.database)
 
     // Setup Auth Routing

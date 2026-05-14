@@ -1,52 +1,52 @@
 import type { UUID } from "crypto";
 import { Account } from "../domain/account.js";
-import type { AccountDatabase } from "../data/account-database.js";
+import type { AccountDb } from "../data/account-database.js";
 import { Token } from "../domain/token.js";
 import type { GetAccountCommand, EditUser, DeleteAccountCommand, LoginCommand, LogoutCommand } from "../domain/command-queries.mjs";
+import { AuthenticationError, UnauthorizedError } from "@/common/errors.js";
 
-export function CreateAccount(database:AccountDatabase): (command:LoginCommand)=>Promise<Account> {
+export function CreateAccount(database:AccountDb): (command:LoginCommand)=>Promise<Account> {
   return async function(command:LoginCommand): Promise<Account> {
     return database.createAccount(command.username, command.password)
   }
 }
 
-export function GetAccount(database:AccountDatabase): (command:GetAccountCommand)=>Promise<Account> {
+export function GetAccount(database:AccountDb): (command:GetAccountCommand)=>Promise<Account> {
   return async function(command:GetAccountCommand): Promise<Account> {
     return database.readAccount(command.accountId)
   }
 }
 
-export function UpdateAccount(database:AccountDatabase): (command:EditUser) => Promise<Account> {
+export function UpdateAccount(database:AccountDb): (command:EditUser) => Promise<Account> {
   return async function(command:EditUser): Promise<Account> {
     return database.updateAccount(command.userId, command.username)
   }
 }
 
-export function DeleteAccount(database:AccountDatabase): (command:DeleteAccountCommand) => Promise<void> {
+export function DeleteAccount(database:AccountDb): (command:DeleteAccountCommand) => Promise<void> {
   return async function(command:DeleteAccountCommand): Promise<void> {
     await database.deleteAccount(command.accountId)
   }
 }
 
-export function Login(database:AccountDatabase): (command:LoginCommand)=>Promise<Token> {
+export function Login(database:AccountDb): (command:LoginCommand)=>Promise<Token> {
   return async function(command:LoginCommand): Promise<Token> {
-    // TODO: Implement login logic
     const acct = await database.findAccount(command.username)
     const hash = acct.passHash
     // TODO: check hash
-    // TODO: create session or deny
-    if (hash) {
+    const hashValid = true
+    if (hashValid) {
       // TODO: get device info from headers
-      database.createSession(acct.userId,'device|session-info')
-      const twoDaysInSeconds = 48 * 3600
-      return new Token('', new Date(Date.now() + twoDaysInSeconds))
+      const deviceInfo = 'device|session-info'
+      const token = database.createSession(acct.userId,deviceInfo)
+      return token
     } else {
-      throw AuthenticationError(command.username)
+      throw new AuthenticationError(command.username)
     }
   }
 }
 
-export function Logout(database:AccountDatabase): (command:LogoutCommand) => Promise<void> {
+export function Logout(database:AccountDb): (command:LogoutCommand) => Promise<void> {
   return async function(command:LogoutCommand): Promise<void> {
     // TODO: remove session or token associated with user
     
@@ -54,8 +54,8 @@ export function Logout(database:AccountDatabase): (command:LogoutCommand) => Pro
 }
 
 export class AccountInteractor {
-  database: AccountDatabase
-  constructor(database: AccountDatabase) {
+  database: AccountDb
+  constructor(database: AccountDb) {
     this.database = database
   }
 

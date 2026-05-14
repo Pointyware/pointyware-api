@@ -1,9 +1,9 @@
 
 import express from 'express'
-import type { AccountDatabase } from './data/account-database.js'
+import type { AccountDb } from './data/account-database.js'
 import { CreateAccount, DeleteAccount, GetAccount, Login, Logout, UpdateAccount } from './usecases/account-interactors.js'
 import { CreateAccountCommandMapper, DeleteAccountCommandMapper, GetAccountCommandMapper, LoginCommandMapper, LogoutCommandMapper, UpdateAccountCommandMapper } from './adapters/account.js'
-import { adapter, UnimplementedAdapter } from '../common/adapters.js'
+import { adapter, AuthResponseMapper, UnimplementedAdapter } from '../common/adapters.js'
 
 /**
  * TODO: rename to Router and refactor to use express.Router() objects
@@ -11,12 +11,15 @@ import { adapter, UnimplementedAdapter } from '../common/adapters.js'
  */
 export function accountRouting(
   app:express.Application,
-  accountDatabase: AccountDatabase
+  accountDatabase: AccountDb
 ) {
 
-  app.post('/login', adapter(
+  app.post('/login', 
+    express.urlencoded(),
+    adapter(
     LoginCommandMapper,
-    Login(accountDatabase)
+    Login(accountDatabase),
+    AuthResponseMapper
   ))
 
   app.post('/logout', adapter(
