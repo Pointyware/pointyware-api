@@ -3,10 +3,12 @@ import { describe, it, test, expect, assert, beforeAll, beforeEach } from 'vites
 import request from 'supertest'
 import { SocialService } from '@/social/social-service.js'
 import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
+import { CommentInteractor } from '@/social/usecases/comment-interactors.js'
 
 function testService(): SocialService {
   const testDb = new TestSocialDatabase()
-  return new SocialService(testDb)
+  const interactor = new CommentInteractor(testDb)
+  return new SocialService(interactor)
 }
 
 // TODO: consider using nock to mock network responses
