@@ -18,15 +18,13 @@ import { TestAccountDatabase } from './data/test-account-database.mjs'
  * lifecycle of the service.
  */
 export class AccountService extends Service {
-  pool: Pool
   database: AccountDb
   interactor: AccountInteractor
-  constructor(pool:Pool) {
+  constructor(accountInteractor:AccountInteractor) {
     super()
-    this.pool = pool
     // this.database = new AccountDatabase(pool)
     this.database = new TestAccountDatabase()
-    this.interactor = new AccountInteractor(this.database)
+    this.interactor = accountInteractor
 
     // Setup Auth Routing
     accountRouting(this.app,this.database)

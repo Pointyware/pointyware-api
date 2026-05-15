@@ -179,6 +179,7 @@ export function standardErrorMapper<T>(error:unknown): FailurePayload {
       }
     }
   }
+  console.error('Unhandled Server Error', error)
   return { status: 500, body: { message:"Unhandled Server Error", cause: error}} // default headers: {}
 }
 

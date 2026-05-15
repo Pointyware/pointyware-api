@@ -2,8 +2,11 @@
 import { Router, type Application } from 'express'
 import { UnimplementedAdapter } from '../common/adapters.js'
 import { CreateCommentMapper, GetCommentMapper } from './adapters/comment-mappers.js'
-import { CommentInteractor } from './usecases/comment-interactors.js'
+import { CommentInteractor, FeedInteractor } from './usecases/comment-interactors.js'
 import { authenticatedHandler } from './network/handlers.mjs'
+import { CreateFeedMapper } from './adapters/feed-mappers.js'
+import { CreateFeed } from './usecases/feed-interactor.js'
+import type { Feed } from './domain/feed.js'
 
 /**
  * What is the single responsibility of a router?
@@ -15,9 +18,9 @@ import { authenticatedHandler } from './network/handlers.mjs'
  * Isn't that 
  * @param app 
  */
-export function socialRouting(app: Application, interactor: CommentInteractor) {
-  const feedsRouter = getFeedsRouter()
-  const commentsRouter = getCommentsRouter(interactor)
+export function socialRouting(app: Application, feedInteractor: FeedInteractor, commentInteractor: CommentInteractor) {
+  const feedsRouter = getFeedsRouter(feedInteractor)
+  const commentsRouter = getCommentsRouter(commentInteractor)
   const reactionsRouter = getReactionsRouter()
 
   app.use(feedsRouter)
@@ -25,10 +28,14 @@ export function socialRouting(app: Application, interactor: CommentInteractor) {
   app.use(reactionsRouter)
 }
 
-export function getFeedsRouter() {
+export function getFeedsRouter(feedsInteractor: FeedInteractor) {
   const router = Router()
   const feedsRoute = router.route('/feeds')
   feedsRoute
+    .post(authenticatedHandler(
+      CreateFeedMapper,
+      feedsInteractor.create
+    ))
     // .post(authenticatedAdapter(
     //   CreateFeedMapper,
     //   CreateFeed(feedDb)
@@ -38,7 +45,7 @@ export function getFeedsRouter() {
     //   GetFeeds(feedDb)
     // ))
 
-  const feedIdRoute = router.route('/feeds/feed-:feedId')
+  const feedIdRoute = router.route('/feeds/:feedId')
   feedIdRoute
     // .post(authenticatedAdapter(
     //   CreateCommentMapper,
@@ -62,7 +69,7 @@ export function getFeedsRouter() {
 
 export function getCommentsRouter(commentsInteractor: CommentInteractor) {
   const router = Router()
-  const comments = router.route('/feeds/feed-:feedId/comments')
+  const comments = router.route('/feeds/:feedId/comments')
   comments
     .post(authenticatedHandler(
       CreateCommentMapper,
@@ -73,7 +80,7 @@ export function getCommentsRouter(commentsInteractor: CommentInteractor) {
       commentsInteractor.get
     ))
   
-  const commentIdRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId')
+  const commentIdRoute = router.route('/feeds/:feedId/comments/:commentId')
   commentIdRoute
     // .post(adapter(
     //   CreateCommentMapper,
@@ -93,7 +100,7 @@ export function getCommentsRouter(commentsInteractor: CommentInteractor) {
 
 export function getReactionsRouter() {
   const router = Router()
-  const reactionsRoute = router.route('/feeds/feed-:feedId/comments/comment-:commentId/reactions')
+  const reactionsRoute = router.route('/feeds/:feedId/comments/:commentId/reactions')
   reactionsRoute
     // .put(adapter(
     //   SetReactionMapper,

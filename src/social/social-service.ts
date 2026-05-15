@@ -3,18 +3,18 @@ import { socialRouting } from '../social/social-routing.js'
 import { Service } from '../common/service.js'
 import { SqliteSocialDatabase } from './data/sqlite-social-database.js'
 import { ErrorHandler } from '../common/network.js'
-import { CommentInteractor } from './usecases/comment-interactors.js'
+import { CommentInteractor, FeedInteractor } from './usecases/comment-interactors.js'
 
 /**
  * The Social Service 
  */
 export class SocialService extends Service {
 
-  constructor(commentInteractor:CommentInteractor) {
+  constructor(feedsInteractor:FeedInteractor, commentInteractor:CommentInteractor) {
     super()
 
     // Setup API Routing
-    socialRouting(this.app, commentInteractor)
+    socialRouting(this.app, feedsInteractor, commentInteractor)
   
     // Catch All Unhandled Errors
     this.app.use(ErrorHandler)
@@ -34,8 +34,9 @@ export class SocialService extends Service {
 
 export default async function startSocialService(port:number): Promise<SocialService> {
   const prodDb = new SqliteSocialDatabase()
+  const feedInteractor = new FeedInteractor(prodDb)
   const commentInteractor = new CommentInteractor(prodDb)
-  const service = new SocialService(commentInteractor)
+  const service = new SocialService(feedInteractor, commentInteractor)
   await service.start(port)
   return service
 }

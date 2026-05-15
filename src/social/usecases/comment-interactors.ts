@@ -2,8 +2,9 @@ import type { SocialDatabase } from "../data/sqlite-social-database.js"
 import type { CommentDatabase } from "../data/social-databases.js"
 import type { Comment } from "../domain/comment.js"
 import type { UserQuery } from "../../accounts/domain/command-queries.mjs"
-import type { CreateCommentCommand, CommentQuery, CommentsQuery, UpdateCommentCommand, DeleteCommentCommand } from "../domain/command-queries.js"
+import type { CreateCommentCommand, CommentQuery, CommentsQuery, UpdateCommentCommand, DeleteCommentCommand, CreateFeedCommand } from "../domain/command-queries.js"
 import type { AnonymousUser, AuthenticatedUser } from "@/common/users.js"
+import type { Feed } from "../domain/feed.js"
 
 export function CreateComment(database: CommentDatabase): (command:CreateCommentCommand) => Promise<Comment> {
   return async (command:CreateCommentCommand)=> {
@@ -35,6 +36,16 @@ export function UpdateComment(database: SocialDatabase) {
 export function DeleteComment(database: SocialDatabase) {
   return (command:DeleteCommentCommand)=> {
     return database.deleteComment(command.feedId, command.commentId)
+  }
+}
+
+export class FeedInteractor {
+  database: SocialDatabase
+  constructor(database: SocialDatabase) {
+    this.database = database
+  }
+  create(command: CreateFeedCommand, user: AuthenticatedUser): Promise<Feed> {
+    return this.database.createFeed(user.accountId, command.title)
   }
 }
 
