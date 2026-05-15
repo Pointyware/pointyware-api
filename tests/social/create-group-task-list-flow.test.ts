@@ -2,21 +2,19 @@
 import { describe, it, test, expect } from 'vitest'
 import request from 'supertest'
 import { SocialService } from '@/social/social-service.js'
-import { CommentInteractor } from '@/social/usecases/comment-interactors.js'
+import { CommentInteractor, FeedInteractor } from '@/social/usecases/comment-interactors.js'
 import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
 import { TestAccountDatabase } from '@/accounts/data/test-account-database.mjs'
 import { AccountService } from '@/accounts/account-service.js'
 import { AccountInteractor } from '@/accounts/usecases/account-interactors.js'
-import { AccountDatabase } from '@/accounts/data/account-database.js'
 
 describe('Group Task List Creation', ()=> {
 
   test('No Account; No Group', async () => {
     const db = new TestSocialDatabase()
     const interactor = new CommentInteractor(db)
-    const authDb = new TestAccountDatabase()
-
-    const service = new SocialService(interactor)
+    const feedsInteractor = new FeedInteractor(db)
+    const service = new SocialService(feedsInteractor, interactor)
 
     const accountDb = new TestAccountDatabase()
     const accountInteractor = new AccountInteractor(accountDb)

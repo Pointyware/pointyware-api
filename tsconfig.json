@@ -3,6 +3,7 @@
   "compilerOptions": {
     // File Layout
     "rootDir": "./src",
+    "rootDirs": ["./tests"],
     "outDir": "./dist",
 
     // Environment Settings
@@ -45,7 +46,6 @@
     "skipLibCheck": true,
   },
   "exclude": [
-    "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.spec.ts"
   ]
 }
