@@ -3,12 +3,22 @@ import { describe, it, test, expect, assert, beforeAll, beforeEach } from 'vites
 import request from 'supertest'
 import { SocialService } from '@/social/social-service.js'
 import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
-import { CommentInteractor } from '@/social/usecases/comment-interactors.js'
+import { CommentInteractor, FeedInteractor } from '@/social/usecases/comment-interactors.js'
+import { TestAccountDatabase } from '@/accounts/data/test-account-database.mjs'
 
-function testService(): SocialService {
+function testRig() {
   const testDb = new TestSocialDatabase()
+  const authDb = new TestAccountDatabase()
+  const feedInteractor = new FeedInteractor(testDb)
   const interactor = new CommentInteractor(testDb)
-  return new SocialService(interactor)
+  const service = new SocialService(feedInteractor, interactor)
+  return {
+    testDb: testDb,
+    authDb: authDb,
+    feedInteractor: feedInteractor,
+    commentInteractor: interactor,
+    service: service
+  }
 }
 
 // TODO: consider using nock to mock network responses
@@ -20,16 +30,20 @@ describe('Post Comment Flow', async ()=>{
   describe('Token is Valid', async() => {
     beforeEach(()=>{
       // TODO: setup session token
+
     })
 
     test('Post Root Comment on Feed', async ()=>{
-      const service = testService()
+      const rig = testRig()
+      const feed = await rig.testDb.createFeed('someFeed')
+
+      const service = rig.service
       const supertest = request(service.app)
       // User Session is Valid
       const token = 'valid-token' // TODO: insert into test db as valid session
       // User Submits
       const response = await supertest
-        .post('/feeds/feed-0-0-0-0-0')
+        .post(`/feeds/${feed.id}/`)
         .send({
           content: 'This is a new comment!'
         })
@@ -39,7 +53,8 @@ describe('Post Comment Flow', async ()=>{
       expect(response.body.content).toBe('This is a new comment!')
     })
     test('Post Child Comment on Comment', async ()=>{
-      const service = testService()
+      const rig = testRig()
+      const service = rig.service
       const supertest = request(service.app)
       // User Session is Valid
       const token = 'valid-token' // TODO: insert into test db as valid session
@@ -60,21 +75,29 @@ describe('Post Comment Flow', async ()=>{
       // TODO: setup expired token
     })
     test('User Not Logged In', async ()=>{
-      const service = testService()
+      const rig = testRig()
+      const session = await rig.authDb.createSession(
+        '0-0-0-0-0',
+        'some device info'
+      )
+      const feed = await rig.testDb.createFeed('New Feed')
+
+      const service = rig.service
       const supertest = request(service.app)
       // User Session is Invalid
-      const token = 'invalid-token' // TODO: insert into test db an expired session
+      const token = session.key
+      const feedId = feed.id
       // User Submits
       const response = await supertest
-        .post('/feeds/feed-0-0-0-0-0')
+        .post(`/feeds/${feedId}`)
         .send({
           content: 'This is a new comment!'
         })
-        .set('Authorization', 'Bearer ${token}')
+        .set('Authorization', `Bearer ${token}`)
 
       expect(response.statusCode).toBe(401)
       expect(response.body.message).toBe('User is Unauthorized')
-      expect(response.body.cause.resource).toBe('/feeds/feed-0-0-0-0-0')
+      expect(response.body.cause.resource).toBe(`/feeds/${feedId}`)
     })
   })
 })

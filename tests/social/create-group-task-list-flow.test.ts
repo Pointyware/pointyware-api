@@ -4,19 +4,30 @@ import request from 'supertest'
 import { SocialService } from '@/social/social-service.js'
 import { CommentInteractor } from '@/social/usecases/comment-interactors.js'
 import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
+import { TestAccountDatabase } from '@/accounts/data/test-account-database.mjs'
+import { AccountService } from '@/accounts/account-service.js'
+import { AccountInteractor } from '@/accounts/usecases/account-interactors.js'
+import { AccountDatabase } from '@/accounts/data/account-database.js'
 
 describe('Group Task List Creation', ()=> {
 
   test('No Account; No Group', async () => {
     const db = new TestSocialDatabase()
     const interactor = new CommentInteractor(db)
+    const authDb = new TestAccountDatabase()
+
     const service = new SocialService(interactor)
 
-    const supertest = request(service.app)
+    const accountDb = new TestAccountDatabase()
+    const accountInteractor = new AccountInteractor(accountDb)
+    const authService = new AccountService(accountInteractor)
+
+    const socialSupertest = request(service.app)
+    const authSupertest = request(authService.app)
     
     // 1. Create Account
-    const accountCreationResponse = await supertest
-      .post('/login')
+    const accountCreationResponse = await authSupertest
+      .post('/account')
       .send({
         username: 'username',
         password: 'password'
@@ -26,7 +37,7 @@ describe('Group Task List Creation', ()=> {
     
     // 2. Create Group
     const token = accountCreationResponse.body.token
-    const groupCreationResponse = await supertest
+    const groupCreationResponse = await socialSupertest
       .post('/groups')
       .auth(token, { type: 'bearer' })
       .send({
@@ -37,7 +48,7 @@ describe('Group Task List Creation', ()=> {
 
     // 3. Create TaskList
     const groupId = groupCreationResponse.body.groupId
-    const taskListCreationResponse = await supertest
+    const taskListCreationResponse = await socialSupertest
       .post(`/groups/${groupId}/tasks/`)
       .send({
         name: "New List"
@@ -50,7 +61,7 @@ describe('Group Task List Creation', ()=> {
     const taskIds = []
     const total = 5
     for (let index = 0; index < total; index++) {
-      const taskCreationResponse = await supertest
+      const taskCreationResponse = await socialSupertest
         .post(`/groups/${groupId}/tasks/${listId}/`)
         .auth(token, { type: 'bearer'})
         .send({
@@ -66,12 +77,12 @@ describe('Group Task List Creation', ()=> {
     // 5. Check off Tasks
     const secondTaskId = taskIds[1]
     const thirdTaskId = taskIds[2]
-    const checkOffSecondResponse = await supertest
+    const checkOffSecondResponse = await socialSupertest
       .patch(`/groups/${groupId}/tasks/${listId}/${secondTaskId}`)
       .send({
         completion: 100
       })
-    const checkOffThirdResponse = await supertest
+    const checkOffThirdResponse = await socialSupertest
       .patch(`/groups/${groupId}/tasks/${listId}/${thirdTaskId}`)
       .send({
         completion: 100
