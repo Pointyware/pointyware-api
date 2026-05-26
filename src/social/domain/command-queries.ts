@@ -58,3 +58,23 @@ export interface DeleteReactionCommand {
   commentId: UUID
   userId: UUID
 }
+
+export interface CreateGroupCommand {
+  name: string
+}
+
+export interface AddMemberCommand {
+  userId: UUID
+}
+
+export interface CreateTaskListCommand {
+  groupId: UUID
+  listName: string
+}
+
+export interface CreateTaskCommand {
+  groupId: UUID
+  listId: UUID
+  taskName: string
+  taskDescription?: string
+}

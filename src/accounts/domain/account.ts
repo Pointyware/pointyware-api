@@ -6,11 +6,14 @@ import { URL } from "node:url"
  */
 export class Account {
   username:string
+  token:UUID
   email:string|undefined
   phoneNumber:string|undefined
 
-  constructor(username:string,email?:string,phoneNumber?:string) {
+
+  constructor(username:string,token:UUID,email?:string,phoneNumber?:string) {
     this.username = username
+    this.token = token
     this.email = email
     this.phoneNumber = phoneNumber
   }

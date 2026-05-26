@@ -5,8 +5,8 @@ import { CreateCommentMapper, GetCommentMapper } from './adapters/comment-mapper
 import { CommentInteractor, FeedInteractor } from './usecases/comment-interactors.js'
 import { authenticatedHandler } from './network/handlers.mjs'
 import { CreateFeedMapper } from './adapters/feed-mappers.js'
-import { CreateFeed } from './usecases/feed-interactor.js'
-import type { Feed } from './domain/feed.js'
+import type { GroupInteractor } from './usecases/group-interactor.js'
+import { CreateGroupCommandMapper } from './adapters/group-mappers.js'
 
 /**
  * What is the single responsibility of a router?
@@ -18,14 +18,23 @@ import type { Feed } from './domain/feed.js'
  * Isn't that 
  * @param app 
  */
-export function socialRouting(app: Application, feedInteractor: FeedInteractor, commentInteractor: CommentInteractor) {
+export function socialRouting(app: Application,
+  feedInteractor: FeedInteractor,
+  commentInteractor: CommentInteractor,
+  groupInteractor: GroupInteractor
+) {
   const feedsRouter = getFeedsRouter(feedInteractor)
   const commentsRouter = getCommentsRouter(commentInteractor)
   const reactionsRouter = getReactionsRouter()
 
+  const groupsRouter = getGroupsRouter(groupInteractor)
+  
   app.use(feedsRouter)
   app.use(commentsRouter)
   app.use(reactionsRouter)
+  app.use(groupsRouter)
+  app.use(getTaskRouter())
+  app.use(getKitchenRouter())
 }
 
 export function getFeedsRouter(feedsInteractor: FeedInteractor) {
@@ -114,52 +123,43 @@ export function getReactionsRouter() {
   return router
 }
 
+export function getGroupsRouter(groupInteractor: GroupInteractor) {
+  const groupRouter = Router()
+  
+  groupRouter.route('/groups')
+    .post(authenticatedHandler(
+      CreateGroupCommandMapper,
+      groupInteractor.createGroup
+    ))
 
-/*
-GLOBAL SCOPE
+  groupRouter.route('/groups/:groupId')
+  groupRouter.route('/groups/:groupId/members')
+  groupRouter.route('/groups/:groupId/members/:memberId')
 
-tasks: Map[Id, Task]
-tasks: Collection/Set[Task]
-/tasks
-
-type Task {
-  someProperty: ReturnType
-  /tasks/task-id/someProperty
-
-  someFunction(arg1,arg2) {
-  }
-  /tasks/task-id/someFunction?arg1=val1&arg2=val2
+  return groupRouter
 }
 
-
-*/
-
-export function taskRouting(app:Application) {
+export function getTaskRouter() {
   const taskRouter = Router()
 
   // - /tasks
   // - /tasks/taskId
-  // 
-  taskRouter
-    .route('/tasks')
+  taskRouter.route('/groups/:groupId/lists')
+
+  taskRouter.route('/group/:groupId/lists/:listId')
     .post(UnimplementedAdapter)
     .get(UnimplementedAdapter)
     .put(UnimplementedAdapter)
     .delete(UnimplementedAdapter)
-  taskRouter
-    .route('/tasks/')
-  taskRouter
-    .route('/tasks/')
-  
 
   return taskRouter
 }
-export function recipesRouting(app:Application) {
-  const recipesRouter = Router()
+
+export function getKitchenRouter() {
+  const kitchenRouter = Router()
 
   // - /recipes
   // - /recipes
-  // 
 
-  return recipesRouter
+  return kitchenRouter
 }
