@@ -5,10 +5,10 @@ import { type AccountDb } from "./account-database.js";
 
 export class TestAccountDatabase implements AccountDb {
   async createAccount(username: string, password: string): Promise<Account> {
-    return new Account(username)
+    return new Account(username, randomUUID())
   }
   async readAccount(userId: UUID): Promise<Account> {
-    return new Account('username')
+    return new Account('username', userId)
   }
   async findAccount(username: string): Promise<AccountAuth> {
     return {
@@ -17,7 +17,7 @@ export class TestAccountDatabase implements AccountDb {
     }
   }
   async updateAccount(id: UUID, username?: string, password?: string): Promise<Account> {
-    return new Account('username')
+    return new Account(username ?? 'username', id)
   }
   async deleteAccount(id: string): Promise<void> {
     return
