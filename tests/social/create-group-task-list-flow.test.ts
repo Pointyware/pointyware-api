@@ -7,6 +7,7 @@ import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
 import { TestAccountDatabase } from '@/accounts/data/test-account-database.mjs'
 import { AccountService } from '@/accounts/account-service.js'
 import { AccountInteractor } from '@/accounts/usecases/account-interactors.js'
+import { GroupInteractor } from '@/social/usecases/group-interactor.js'
 
 describe('Group Task List Creation', ()=> {
 
@@ -14,7 +15,8 @@ describe('Group Task List Creation', ()=> {
     const db = new TestSocialDatabase()
     const interactor = new CommentInteractor(db)
     const feedsInteractor = new FeedInteractor(db)
-    const service = new SocialService(feedsInteractor, interactor)
+    const groupInteractor = new GroupInteractor(db)
+    const service = new SocialService(feedsInteractor, interactor, groupInteractor)
 
     const accountDb = new TestAccountDatabase()
     const accountInteractor = new AccountInteractor(accountDb)

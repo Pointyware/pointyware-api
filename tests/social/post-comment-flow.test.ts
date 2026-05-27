@@ -5,13 +5,15 @@ import { SocialService } from '@/social/social-service.js'
 import { TestSocialDatabase } from '@/social/data/test-social-databases.mjs'
 import { CommentInteractor, FeedInteractor } from '@/social/usecases/comment-interactors.js'
 import { TestAccountDatabase } from '@/accounts/data/test-account-database.mjs'
+import { GroupInteractor } from '@/social/usecases/group-interactor.js'
 
 function testRig() {
   const testDb = new TestSocialDatabase()
   const authDb = new TestAccountDatabase()
   const feedInteractor = new FeedInteractor(testDb)
   const interactor = new CommentInteractor(testDb)
-  const service = new SocialService(feedInteractor, interactor)
+  const groupInteractor = new GroupInteractor(testDb)
+  const service = new SocialService(feedInteractor, interactor, groupInteractor)
   return {
     testDb: testDb,
     authDb: authDb,
