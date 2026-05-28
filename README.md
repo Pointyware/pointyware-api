@@ -113,28 +113,60 @@ Instead of using a true controller that has knowledge of the framework layer wit
 
 ```mermaid
 classDiagram
-  class 
+
+  class Repository {
+
+  }
+
+  class FeatureInteractor {
+
+  }
+  FeatureInteractor o--> Repository
+
+  class FeatureAdapter {
+
+  }
+  FeatureAdapter o--> FeatureInteractor
+
+  class ExpressHandler {
+    handle(req: Request, res: Response)
+  }
+  ExpressHandler *--> FeatureAdapter
+
+  class ExpressRequestMapper {
+    map(req: Request<*, *, *, *>: {A, B, C, D}
+  }
+
+  class ExpressResponseMapper {
+    map(res: Response<*>, data: T)
+  }
+  ExpressHandler *--> ExpressRequestMapper
+  ExpressHandler *--> ExpressResponseMapper
+
 ```
 
 **Chain of Responsibility[^guru-chain]**
 
+A chain of responsibility is a structural pattern that essentially turns nodes of computation into a linked list of nodes. Each node of computation is often referred to as a "handler".
+
+*Handler* - A single "link" in the chain of responsibility.
+
+**Adapter**
+
+**Query Object[^fowler-query-object]**
+
+**Service Layer[^guru-service]**
+
+**Transaction Script[^fowler-transaction]**
 
 
 **Repository[^fowler-repository]** - 
 
 
-
 **Table Data Gateway[^fowler-table-gateway]**
 
 
-
 **Data Mapper[^fowler-data-mapper]** - 
-
-
-
-**Query Object[^fowler-query-object]** - 
-
-**Handler
 
 **Service Stub[^fowler-service-stub]** - 
 
